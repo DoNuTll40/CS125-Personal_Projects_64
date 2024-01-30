@@ -94,7 +94,7 @@ model Room {
   build_id       Int
   Subject        Subject[]
   Sec_Teacher    Sec_Teacher @relation(fields: [sec_Teacher_id], references: [st_id], onDelete: Cascade, onUpdate: Cascade)
-  sec_Teacher_id Int         @map("sec_teacher")
+  sec_Teacher_id Int         @map("sec_teacher_id")
 
   @@map("room")
 }
