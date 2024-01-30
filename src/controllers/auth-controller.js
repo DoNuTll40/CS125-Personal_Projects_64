@@ -33,10 +33,58 @@ exports.register = async (req, res, next) => {
     
 };
 
-exports.login = (req, res, next) => {
+exports.login = async (req, res, next) => {
     try {
-        res.json({ message : "path login"})
+        const { username, password } = req.body;
+
+        if (!username || !password) {
+            return createError(400, "username or password are require");
+        }
+
+        if(typeof username !== "string" || typeof password !== "string"){
+            return createError(400, "username or password invalid")
+        }
+
+        const isUserExist = await userService.getUserByUsername(username);
+
+        if(!isUserExist){
+            return createError(400, "username or password invalid");
+        }
+
+        const token = jwt.sign({ id: isUserExist.user_id }, process.env.JWT_SECRET,{
+            expiresIn: process.env.JWT_EXPIRES_IN,
+        });
+
+        res.json({ token ,message : "login success"})
     }catch(err){
         next(err)
     }
 };
+
+exports.adminLogin = async (req, res, next) => {
+    try {
+        const { username, password } = req.body;
+  
+        if (!username || !password) {
+            return createError(400, "username or password are require");
+        }
+  
+        if(typeof username !== "string" || typeof password !== "string"){
+            return createError(400, "username or password invalid")
+        }
+  
+        const isUserExist = await userService.getUserByUsername(username);
+  
+        if(!isUserExist){
+            return createError(400, "username or password invalid");
+        }
+  
+        const token = jwt.sign({ id: isUserExist.user_id }, process.env.JWT_SECRET,{
+            expiresIn: process.env.JWT_EXPIRES_IN,
+        });
+  
+        res.json({ token ,message : "login success"})
+    }catch(err){
+        next(err)
+    }
+  };

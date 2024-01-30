@@ -8,13 +8,23 @@ const userRoute = require("./src/routes/user-route")
 const adminRoute = require("./src/routes/admin-route")
 const authRoute = require("./src/routes/auth-route")
 
+const authenticate = require("./src/middlewares/authenticate")
+const user = require('./src/middlewares/user');
+const admin = require("./src/middlewares/admin")
+
+const errorHandler = require("./src/middlewares/error");
+const notFoundError = require("./src/middlewares/not-found");
+
+
 web.use(express.json());
 
-web.use("/user", userRoute);
-web.use("/admin", adminRoute);
-
+web.use("/user", authenticate, user, userRoute);
+web.use("/admin", authenticate, admin, adminRoute);
 web.use("/auth", authRoute);
 
 web.listen(port, () => {
     console.log(`\nServer run on port ${port} | URL : http://localhost:${port} \n`);
 })
+
+web.use(errorHandler)
+web.use("*", notFoundError)
