@@ -44,7 +44,7 @@ model Users {
   user_brithday  DateTime?  @db.Date
   user_identity  Int?
   Section        Section[]
-  class          Class?     @relation(fields: [class_id], references: [class_id])
+  class          Class?    @relation(fields: [class_id], references: [class_id])
   class_id       Int
 
   @@map("users")
