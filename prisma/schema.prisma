@@ -35,16 +35,16 @@ model Users {
   user_username  String
   user_password  String
   user_role      Role      @default(USER)
-  user_firstname String
-  user_lastname  String
+  user_firstname String?
+  user_lastname  String?
   user_nickname  String?
   user_email     String?
   user_phone     String?
-  user_address   String
-  user_brithday  DateTime  @db.Date
-  user_identity  Int
+  user_address   String?
+  user_brithday  DateTime?  @db.Date
+  user_identity  Int?
   Section        Section[]
-  class          Class     @relation(fields: [class_id], references: [class_id])
+  class          Class?     @relation(fields: [class_id], references: [class_id])
   class_id       Int
 
   @@map("users")
