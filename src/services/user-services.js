@@ -17,6 +17,22 @@ exports.getUserByUsername = (username) => {
     })
 }
 
+exports.checkLoginUsername = (username) => {
+  return prisma.users.findFirst({
+      where: {
+          user_username: username,
+      }
+  })
+}
+
+exports.checkLoginPassword = (password) => {
+  return prisma.users.findFirst({
+      where: {
+          user_password: password,
+      }
+  })
+}
+
 exports.createUser = (username, password, role, classId) => {
     return prisma.users.create({
         data: {

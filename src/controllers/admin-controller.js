@@ -1,7 +1,7 @@
 
 exports.getSubject = (req, res, next) => {
     const { sub } = req.params;
-    res.json({  sub, message : "get sub" })
+    res.json({ sub, message : "get sub" })
 };
 
 exports.createSubject = (req, res, next) => {

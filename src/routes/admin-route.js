@@ -5,6 +5,7 @@ const adminControllers = require("../controllers/admin-controller")
 
 // Path ShowData
 router.get("/subject", adminControllers.getSubject);
+router.get("/subject/:sub", adminControllers.getSubject);
 router.get("/users", adminControllers.getUsers);
 router.get("/teachers", adminControllers.getTeacher);
 router.get("/major", adminControllers.getMajor);
@@ -22,6 +23,15 @@ router.post("/builds", adminControllers.createBuilds);
 router.post("/rooms", adminControllers.createRoom);
 
 // Path Edit
-router.post("/users/:userId", adminControllers.editUserById);
+router.patch("/users/:userId", adminControllers.editUserById);
+
+// Path Delete
+// router.delete("/subject/:subjectId", adminControllers)
+// router.delete("/users/:userId", adminControllers)
+// router.delete("/teachers/:teacherId", adminControllers)
+// router.delete("/major/:majorId", adminControllers)
+// router.delete("/sections/:sectionId", adminControllers)
+// router.delete("/builds/:buildId", adminControllers)
+// router.delete("/builds/:buildId", adminControllers)
 
 module.exports = router;
