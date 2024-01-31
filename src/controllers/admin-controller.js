@@ -17,6 +17,11 @@ exports.createUser = (req, res, next) => {
     res.json({ message : "Create Users" })
 };
 
+exports.editUserById = (req, res, next) => {
+    const { userId } = req.params;
+    res.json({ userId, message : "Edit User By ID" });
+};
+
 exports.getTeacher = (req, res, next) => {
     res.json({ message : "Get Teacher" })
 };
