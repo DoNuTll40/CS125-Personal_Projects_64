@@ -7,6 +7,7 @@ const adminControllers = require("../controllers/admin-controller")
 router.get("/subject", adminControllers.getSubject);
 router.get("/subject/:sub", adminControllers.getSubject);
 router.get("/users", adminControllers.getUsers);
+router.get("/users/:userId", adminControllers.getUserById);
 router.get("/teachers", adminControllers.getTeacher);
 router.get("/major", adminControllers.getMajor);
 router.get("/sections", adminControllers.getSections);

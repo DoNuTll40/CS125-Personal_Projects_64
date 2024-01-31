@@ -1,4 +1,7 @@
 
+const prisma = require("../configs/prisma");
+const createError = require("../utils/createError");
+
 exports.getSubject = (req, res, next) => {
     const { sub } = req.params;
     res.json({ sub, message : "get sub" })
@@ -9,8 +12,35 @@ exports.createSubject = (req, res, next) => {
     res.json({ name, number, major_id, message : "create sub" })
 };
 
-exports.getUsers = (req, res, next) => {
-    res.json({ message : "Get Users" })
+exports.getUsers = async (req, res, next) => {
+    const user = await prisma.users.findMany();
+    res.json({ user })
+};
+
+exports.getUserById = async (req, res, next) => {
+    try {
+
+        const { userId } = req.params;
+
+        const user = await prisma.users.findFirst({
+            where: {
+                user_id: Number(userId),
+            }
+        });
+
+        // const user = await prisma.$queryRaw`select * from users where user_id = ${userId}`;
+
+        if (!user){
+            return createError(404, "User not found")
+        }
+
+        res.json({ user })
+
+        next();
+
+    }catch(err){
+        next(err);
+    }
 };
 
 exports.createUser = (req, res, next) => {
