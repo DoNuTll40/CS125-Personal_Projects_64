@@ -1,13 +1,12 @@
 
 const express = require("express")
 const router = express.Router();
-const adminControllers = require("../controllers/admin-controller")
+const adminControllers = require("../controllers/admin-controller");
+const prisma = require("../configs/prisma");
 
 // Path ShowData
 router.get("/subject", adminControllers.getSubject);
-router.get("/subject/:sub", adminControllers.getSubject);
 router.get("/users", adminControllers.getUsers);
-router.get("/users/:userId", adminControllers.getUserById);
 router.get("/teachers", adminControllers.getTeacher);
 router.get("/major", adminControllers.getMajor);
 router.get("/sections", adminControllers.getSections);
@@ -24,7 +23,7 @@ router.post("/builds", adminControllers.createBuilds);
 router.post("/rooms", adminControllers.createRoom);
 
 // Path Edit
-router.patch("/users/:userId", adminControllers.editUserById);
+router.put("/users/:userId", adminControllers.editUserById);
 
 // Path Delete
 // router.delete("/subject/:subjectId", adminControllers)

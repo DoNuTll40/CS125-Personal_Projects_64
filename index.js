@@ -4,6 +4,8 @@ const express = require("express");
 const web = express();
 const port = process.env.PORT;
 
+const cors = require('cors')
+
 const userRoute = require("./src/routes/user-route")
 const adminRoute = require("./src/routes/admin-route")
 const authRoute = require("./src/routes/auth-route")
@@ -15,7 +17,7 @@ const admin = require("./src/middlewares/admin")
 const errorHandler = require("./src/middlewares/error");
 const notFoundError = require("./src/middlewares/not-found");
 
-
+web.use(cors())
 web.use(express.json());
 
 web.use("/user", authenticate, user, userRoute);

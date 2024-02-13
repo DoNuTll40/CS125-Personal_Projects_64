@@ -3,7 +3,6 @@ const prisma = require("../configs/prisma");
 const createError = require("../utils/createError");
 
 exports.getSubject = (req, res, next) => {
-    const { sub } = req.params;
     res.json({ sub, message : "get sub" })
 };
 
@@ -17,32 +16,6 @@ exports.getUsers = async (req, res, next) => {
     res.json({ user })
 };
 
-exports.getUserById = async (req, res, next) => {
-    try {
-
-        const { userId } = req.params;
-
-        const user = await prisma.users.findFirst({
-            where: {
-                user_id: Number(userId),
-            }
-        });
-
-        // const user = await prisma.$queryRaw`select * from users where user_id = ${userId}`;
-
-        if (!user){
-            return createError(404, "User not found")
-        }
-
-        res.json({ user })
-
-        next();
-
-    }catch(err){
-        next(err);
-    }
-};
-
 exports.createUser = (req, res, next) => {
     res.json({ message : "Create Users" })
 };
@@ -52,8 +25,9 @@ exports.editUserById = (req, res, next) => {
     res.json({ userId, message : "Edit User By ID" });
 };
 
-exports.getTeacher = (req, res, next) => {
-    res.json({ message : "Get Teacher" })
+exports.getTeacher = async (req, res, next) => {
+    const teacher = await prisma.teacher.findMany();
+    res.json({ teacher })
 };
 
 exports.createTeacher = (req, res, next) => {
@@ -76,8 +50,9 @@ exports.createSections = (req, res, next) => {
     res.json({ message : "Create Sections" })
 };
 
-exports.getBuilds = (req, res, next) => {
-    res.json({ message : "Get Builds" })
+exports.getBuilds = async (req, res, next) => {
+    const builds = await prisma.builds.findMany();
+    res.json({ builds })
 };
 
 exports.createBuilds = (req, res, next) => {

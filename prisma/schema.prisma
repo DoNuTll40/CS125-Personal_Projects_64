@@ -30,6 +30,13 @@ enum mType {
   PHYSICAL_EDUCATION
 }
 
+enum sType {
+  PRIMARY1
+  PRIMARY2
+  SECONDARY1
+  SECONDARY2
+}
+
 model Users {
   user_id        Int       @id @default(autoincrement())
   user_username  String
@@ -41,9 +48,8 @@ model Users {
   user_email     String?
   user_phone     String?
   user_address   String?
-  user_brithday  DateTime?  @db.Date
-  user_identity  Int?
-  Section        Section[]
+  user_brithday  DateTime? @db.Date
+  user_identity  String?   @unique @db.VarChar(16)
   class          Class?    @relation(fields: [class_id], references: [class_id])
   class_id       Int
 
@@ -51,15 +57,16 @@ model Users {
 }
 
 model Teacher {
-  teacher_id        Int           @id @default(autoincrement())
+  teacher_id        Int      @id @default(autoincrement())
   teacher_firstname String
   teacher_lastname  String
   teacher_nickname  String?
   teacher_email     String?
   teacher_phone     String
   teacher_address   String
-  teacher_brithday  DateTime      @db.Date
-  sec_teacher       Sec_Teacher[]
+  teacher_brithday  DateTime @db.Date
+  teacher_image     String?
+  table             table[]
 
   @@map("teacher")
 }
@@ -69,73 +76,72 @@ model Subject {
   sub_name String
   sub_day  String
   sub_time String?
-  Major    Major[]
   room     Room    @relation(fields: [room_id], references: [room_id], onDelete: Cascade, onUpdate: Cascade)
   room_id  Int
+  major    Major   @relation(fields: [Major_id], references: [major_id])
+  Major_id Int     @map("major_id")
+  table    table[]
 
   @@map("subject")
 }
 
 model Major {
-  major_id   Int     @id @default(autoincrement())
+  major_id   Int       @id @default(autoincrement())
   major_name String
-  major_type mType
-  subject    Subject @relation(fields: [subject_id], references: [sub_id], onDelete: Cascade, onUpdate: Cascade)
-  subject_id Int
+  Subject    Subject[]
 
   @@map("major")
 }
 
 model Room {
-  room_id        Int         @id @default(autoincrement())
-  room_name      String
-  room_number    Int
-  build          Builds      @relation(fields: [build_id], references: [build_id], onDelete: Cascade, onUpdate: Cascade)
-  build_id       Int
-  Subject        Subject[]
-  Sec_Teacher    Sec_Teacher @relation(fields: [sec_Teacher_id], references: [st_id], onDelete: Cascade, onUpdate: Cascade)
-  sec_Teacher_id Int         @map("sec_teacher_id")
+  room_id     Int       @id @default(autoincrement())
+  room_name   String
+  room_number Int
+  build       Builds    @relation(fields: [build_id], references: [build_id], onDelete: Cascade, onUpdate: Cascade)
+  build_id    Int
+  Subject     Subject[]
 
   @@map("room")
 }
 
 model Builds {
-  build_id     Int    @id @default(autoincrement())
+  build_id     Int     @id @default(autoincrement())
   build_name   String
   build_number String
+  build_image  String?
   room         Room[]
 
   @@map("builds")
 }
 
 model Section {
-  sec_id      Int           @id @default(autoincrement())
-  sec_number  Int
-  user        Users         @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: Cascade)
-  user_id     Int
-  class       Class         @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: Cascade)
-  class_id    Int
-  sec_teacher Sec_Teacher[]
+  sec_id   Int     @id @default(autoincrement())
+  sec_type sType
+  class    Class[]
 
   @@map("section")
 }
 
-model Sec_Teacher {
-  st_id      Int     @id @default(autoincrement())
-  section    Section @relation(fields: [section_id], references: [sec_id], onDelete: Cascade, onUpdate: Cascade)
-  section_id Int
-  teacher    Teacher @relation(fields: [teacher_id], references: [teacher_id], onDelete: Cascade, onUpdate: Cascade)
-  teacher_id Int
-  Room       Room[]
-
-  @@map("sec_teacher")
-}
-
 model Class {
-  class_id     Int       @id @default(autoincrement())
+  class_id     Int     @id @default(autoincrement())
   class_number String
-  Section      Section[]
+  section      Section @relation(fields: [sec_id], references: [sec_id])
+  sec_id       Int
   Users        Users[]
+  table        table[]
 
   @@map("class")
+}
+
+model table {
+  table_id    Int     @id @default(autoincrement())
+  table_day   String
+  table_time  String
+  table_count Int     @default(1)
+  class       Class   @relation(fields: [Class_id], references: [class_id])
+  Class_id    Int     @map("class_id")
+  subject     Subject @relation(fields: [Sub_id], references: [sub_id])
+  Sub_id      Int     @map("sub_id")
+  teacher     Teacher @relation(fields: [Teacher_id], references: [teacher_id])
+  Teacher_id  Int     @map("teacher_id")
 }

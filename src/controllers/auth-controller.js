@@ -1,3 +1,4 @@
+
 const createError = require("../utils/createError");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -34,6 +35,7 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   try {
     const { username, password } = req.body;
+    console.log(req.body)
 
     if (!username || !password) {
       return createError(400, "username or password are require");

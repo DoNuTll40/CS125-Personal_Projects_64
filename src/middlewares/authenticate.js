@@ -1,4 +1,5 @@
 
+require('dotenv').config();
 const createError = require("../utils/createError");
 const jwt = require("jsonwebtoken");
 const userService = require("../services/user-services");
