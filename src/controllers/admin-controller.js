@@ -1,68 +1,90 @@
-
 const prisma = require("../configs/prisma");
 const createError = require("../utils/createError");
+const { createUser, createSections } = require("../validators/admin-validator");
+const bcrypt = require('bcryptjs')
 
 exports.getSubject = (req, res, next) => {
-    res.json({ sub, message : "get sub" })
+  res.json({ sub, message: "get sub" });
 };
 
 exports.createSubject = (req, res, next) => {
-    const { name, number, major_id } = req.body;
-    res.json({ name, number, major_id, message : "create sub" })
+  const { name, number, major_id } = req.body;
+  res.json({ name, number, major_id, message: "create sub" });
 };
 
 exports.getUsers = async (req, res, next) => {
-    const user = await prisma.users.findMany();
-    res.json({ user })
+  const user = await prisma.users.findMany();
+  res.json({ user });
 };
 
-exports.createUser = (req, res, next) => {
-    res.json({ message : "Create Users" })
+exports.createUser = async (req, res, next) => {
+  try {
+    const value = await createUser.validateAsync(req.body);
+
+    const {  user_password, class_id } = req.body;
+    const hash = await bcrypt.hash(user_password, 10);
+    const userCreate = await prisma.users.create({
+      data: {
+        ...value,
+        user_password: hash,
+        class: {
+          connect: {
+            class_id: Number(class_id),
+          },
+        },
+      },
+    });
+    console.log(userCreate);
+    res.json({ userCreate, message: "Create uers success" });
+  } catch(err) {
+    console.log(err)
+    return createError(400, "Can't create users");
+  }
 };
 
 exports.editUserById = (req, res, next) => {
-    const { userId } = req.params;
-    res.json({ userId, message : "Edit User By ID" });
-};
-
-exports.getTeacher = async (req, res, next) => {
-    const teacher = await prisma.teacher.findMany();
-    res.json({ teacher })
+  const { userId } = req.params;
+  res.json({ userId, message: "Edit User By ID" });
 };
 
 exports.createTeacher = (req, res, next) => {
-    res.json({ message : "Create Teacher" })
+  res.json({ message: "Create Teacher" });
 };
 
 exports.getMajor = (req, res, next) => {
-    res.json({ message : "Get Major" })
+  res.json({ message: "Get Major" });
 };
 
 exports.createMajor = (req, res, next) => {
-    res.json({ message : "Create Major" })
+  res.json({ message: "Create Major" });
 };
 
 exports.getSections = (req, res, next) => {
-    res.json({ message : "Get Sections" })
+  res.json({ message: "Get Sections" });
 };
 
 exports.createSections = (req, res, next) => {
-    res.json({ message : "Create Sections" })
+  res.json({ message: "Create Sections" });
 };
 
 exports.getBuilds = async (req, res, next) => {
-    const builds = await prisma.builds.findMany();
-    res.json({ builds })
+  const builds = await prisma.builds.findMany();
+  res.json({ builds });
 };
 
 exports.createBuilds = (req, res, next) => {
-    res.json({ message : "Create Builds" })
+  res.json({ message: "Create Builds" });
 };
 
 exports.getRoom = (req, res, next) => {
-    res.json({ message : "Get Rooms" })
+  res.json({ message: "Get Rooms" });
 };
 
 exports.createRoom = (req, res, next) => {
-    res.json({ message : "Create Rooms" })
+  res.json({ message: "Create Rooms" });
+};
+
+exports.getClass = async (req, res, next) => {
+    const useClass = await prisma.class.findMany();
+  res.json({ useClass, message: "Get Rooms" });
 };

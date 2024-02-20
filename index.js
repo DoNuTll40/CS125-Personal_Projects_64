@@ -23,6 +23,7 @@ web.use(express.json());
 web.use("/user", authenticate, user, userRoute);
 web.use("/admin", authenticate, admin, adminRoute);
 web.use("/auth", authRoute);
+web.use("/header", userRoute);
 
 web.listen(port, () => {
     console.log(`\nServer run on port ${port} | URL : http://localhost:${port} \n`);

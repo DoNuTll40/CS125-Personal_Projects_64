@@ -3,7 +3,7 @@ const joi = require("joi")
 
 exports.createUser = joi.object({
     user_username: joi.string().required(),
-    user_password: joi.string().required(),
+    user_password: joi.string().required().strip(),
     user_role: joi.string().required(),
     user_firstname: joi.string().required(),
     user_lastname: joi.string().required(),
@@ -12,18 +12,9 @@ exports.createUser = joi.object({
     user_phone: joi.string().required(),
     user_address: joi.string().required(),
     user_brithday: joi.string().required(),
+    confirmPassword: joi.string().required().strip(),
     user_identity: joi.string().required(),
-    class_id: joi.number().required().strip(),
-});
-
-exports.createTeacher = joi.object({
-    teacher_firstname: joi.string().required(),
-    teacher_lastname: joi.string().required(),
-    teacher_nickname: joi.string().required(),
-    teacher_email: joi.string().required(),
-    teacher_phone: joi.string().required(),
-    teacher_address: joi.string().required(),
-    teacher_brithday: joi.string().required()
+    class_id: joi.number().required().strip()
 });
 
 exports.createSubject = joi.object({
@@ -31,27 +22,25 @@ exports.createSubject = joi.object({
     sub_day: joi.string().required(),
     sub_time: joi.string().required(),
     room_id: joi.number().required().strip(),
+    major_id: joi.number().required().strip()
 });
 
 exports.createMajor = joi.object({
-    major_name: joi.string().required(),
-    major_type: joi.string().required(),
-    subject_id: joi.number().required().strip(),
+    major_name: joi.string().required()
 });
 
 exports.createSections = joi.object({
-    sec_number: joi.number().required(),
-        
+    sec_type: joi.string().required()
 });
 
 exports.createBuilds = joi.object({
     build_name: joi.string().required(),
     build_number: joi.string().required(),
+    build_image: joi.string().required()
 });
 
 exports.createRoom = joi.object({
     room_name: joi.string().required(),
     room_number: joi.number().required(),
-    build_id: joi.number().required().strip(),
-    sec_Teacher_id: joi.number().required().strip(),
+    build_id: joi.number().required().strip()
 });

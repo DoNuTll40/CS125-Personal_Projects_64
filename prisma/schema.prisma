@@ -16,20 +16,6 @@ enum Role {
   TEACHER
 }
 
-enum mType {
-  MATH
-  SCIENCE
-  THAI
-  ART
-  HISTORY
-  GEOGRAPHY
-  BIOLOGY
-  CHEMISTRY
-  PHYSICS
-  ENGLISH
-  PHYSICAL_EDUCATION
-}
-
 enum sType {
   PRIMARY1
   PRIMARY2
@@ -38,37 +24,24 @@ enum sType {
 }
 
 model Users {
-  user_id        Int       @id @default(autoincrement())
+  user_id        Int      @id @default(autoincrement())
   user_username  String
   user_password  String
-  user_role      Role      @default(USER)
-  user_firstname String?
-  user_lastname  String?
-  user_nickname  String?
-  user_email     String?
-  user_phone     String?
-  user_address   String?
-  user_brithday  DateTime? @db.Date
-  user_identity  String?   @unique @db.VarChar(16)
-  class          Class?    @relation(fields: [class_id], references: [class_id])
+  user_role      Role     @default(USER)
+  user_firstname String
+  user_lastname  String
+  user_nickname  String
+  user_email     String
+  user_phone     String
+  user_address   String
+  user_brithday  DateTime @db.Date
+  user_identity  String   @unique @db.VarChar(16)
+  user_image     String   @default("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQJxKGGpPc9-5g25KWwnsCCy9O_dlS4HWo5A&usqp=CAU")
+  class          Class    @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: Cascade)
   class_id       Int
+  table          table[]
 
   @@map("users")
-}
-
-model Teacher {
-  teacher_id        Int      @id @default(autoincrement())
-  teacher_firstname String
-  teacher_lastname  String
-  teacher_nickname  String?
-  teacher_email     String?
-  teacher_phone     String
-  teacher_address   String
-  teacher_brithday  DateTime @db.Date
-  teacher_image     String?
-  table             table[]
-
-  @@map("teacher")
 }
 
 model Subject {
@@ -78,7 +51,7 @@ model Subject {
   sub_time String?
   room     Room    @relation(fields: [room_id], references: [room_id], onDelete: Cascade, onUpdate: Cascade)
   room_id  Int
-  major    Major   @relation(fields: [Major_id], references: [major_id])
+  major    Major   @relation(fields: [Major_id], references: [major_id], onDelete: Cascade, onUpdate: Cascade)
   Major_id Int     @map("major_id")
   table    table[]
 
@@ -125,7 +98,7 @@ model Section {
 model Class {
   class_id     Int     @id @default(autoincrement())
   class_number String
-  section      Section @relation(fields: [sec_id], references: [sec_id])
+  section      Section @relation(fields: [sec_id], references: [sec_id], onDelete: Cascade, onUpdate: Cascade)
   sec_id       Int
   Users        Users[]
   table        table[]
@@ -138,10 +111,10 @@ model table {
   table_day   String
   table_time  String
   table_count Int     @default(1)
-  class       Class   @relation(fields: [Class_id], references: [class_id])
+  class       Class   @relation(fields: [Class_id], references: [class_id], onDelete: Cascade, onUpdate: Cascade)
   Class_id    Int     @map("class_id")
-  subject     Subject @relation(fields: [Sub_id], references: [sub_id])
+  subject     Subject @relation(fields: [Sub_id], references: [sub_id], onDelete: Cascade, onUpdate: Cascade)
   Sub_id      Int     @map("sub_id")
-  teacher     Teacher @relation(fields: [Teacher_id], references: [teacher_id])
-  Teacher_id  Int     @map("teacher_id")
+  user        Users   @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: Cascade)
+  user_id     Int
 }

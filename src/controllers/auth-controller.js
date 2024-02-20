@@ -28,6 +28,7 @@ exports.register = async (req, res, next) => {
 
     res.json({ message: "register success" });
   } catch (err) {
+    // console.log(err)
     next(err);
   }
 };
@@ -35,7 +36,6 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   try {
     const { username, password } = req.body;
-    console.log(req.body)
 
     if (!username || !password) {
       return createError(400, "username or password are require");
@@ -46,7 +46,7 @@ exports.login = async (req, res, next) => {
     }
 
     const isUsernameExist = await userService.checkLoginUsername(username);
-    const isPasswordExist = await userService.checkLoginUsername(password);
+    const isPasswordExist = await bcrypt.compare(password, isUsernameExist.user_password);
 
     if (!isUsernameExist || !isPasswordExist) {
       return createError(400, "username or passwod invalid");
@@ -68,7 +68,7 @@ exports.login = async (req, res, next) => {
 
 exports.adminLogin = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, role } = req.body;
 
     if (!username || !password) {
       return createError(400, "username or password are require");
@@ -79,7 +79,7 @@ exports.adminLogin = async (req, res, next) => {
     }
 
     const isUsernameExist = await userService.checkLoginUsername(username);
-    const isPasswordExist = await userService.checkLoginUsername(password);
+    const isPasswordExist = await bcrypt.compare(password, isUsernameExist.user_password);
 
     if (!isUsernameExist || !isPasswordExist) {
       return createError(400, "username or passwod invalid");
