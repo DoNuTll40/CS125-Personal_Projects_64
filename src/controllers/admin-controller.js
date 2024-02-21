@@ -1,7 +1,7 @@
 const prisma = require("../configs/prisma");
 const createError = require("../utils/createError");
 const { createUser, createSections } = require("../validators/admin-validator");
-const bcrypt = require('bcryptjs')
+const bcrypt = require("bcryptjs");
 
 exports.getSubject = (req, res, next) => {
   res.json({ sub, message: "get sub" });
@@ -21,7 +21,7 @@ exports.createUser = async (req, res, next) => {
   try {
     const value = await createUser.validateAsync(req.body);
 
-    const {  user_password, class_id } = req.body;
+    const { user_password, class_id } = req.body;
     const hash = await bcrypt.hash(user_password, 10);
     const userCreate = await prisma.users.create({
       data: {
@@ -32,12 +32,17 @@ exports.createUser = async (req, res, next) => {
             class_id: Number(class_id),
           },
         },
+        major: {
+          connect: {
+            major_id: Number
+          }
+        }
       },
     });
     console.log(userCreate);
     res.json({ userCreate, message: "Create uers success" });
-  } catch(err) {
-    console.log(err)
+  } catch (err) {
+    console.log(err);
     return createError(400, "Can't create users");
   }
 };
@@ -76,8 +81,9 @@ exports.createBuilds = (req, res, next) => {
   res.json({ message: "Create Builds" });
 };
 
-exports.getRoom = (req, res, next) => {
-  res.json({ message: "Get Rooms" });
+exports.getRoom = async (req, res, next) => {4
+  const rooms = await prisma.room.findMany({}) // ถ้าจะกำหนด limit ใช้ take ในการ limit
+  res.json({ rooms ,message: "Get Rooms" });
 };
 
 exports.createRoom = (req, res, next) => {
@@ -85,6 +91,22 @@ exports.createRoom = (req, res, next) => {
 };
 
 exports.getClass = async (req, res, next) => {
-    const useClass = await prisma.class.findMany();
+  const useClass = await prisma.class.findMany();
   res.json({ useClass, message: "Get Rooms" });
+};
+
+exports.deleteUsers = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    console.log(userId)
+    const dUsers = await prisma.users.delete({
+      where: {
+        user_id: Number(userId),
+      },
+    })
+    res.json({ resault: dUsers })
+  } catch (err) {
+    console.log(err)
+    return createError(400, "Delete not found");
+  }
 };

@@ -2,7 +2,6 @@
 const express = require("express")
 const router = express.Router();
 const adminControllers = require("../controllers/admin-controller");
-const prisma = require("../configs/prisma");
 
 // Path ShowData
 router.get("/subject", adminControllers.getSubject);
@@ -26,7 +25,7 @@ router.put("/users/:userId", adminControllers.editUserById);
 
 // Path Delete
 // router.delete("/subject/:subjectId", adminControllers)
-// router.delete("/users/:userId", adminControllers)
+router.delete("/users/:userId", adminControllers.deleteUsers)
 // router.delete("/teachers/:teacherId", adminControllers)
 // router.delete("/major/:majorId", adminControllers)
 // router.delete("/sections/:sectionId", adminControllers)

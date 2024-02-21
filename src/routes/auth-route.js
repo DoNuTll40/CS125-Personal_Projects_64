@@ -8,7 +8,7 @@ const prisma = require("../configs/prisma");
 
 router.post("/register", authenticate, admin, authController.register);
 router.post("/login", authController.login);
-router.post("/adminLogin", authController.adminLogin)
-router.get("/me", authenticate, authController.getMe)
+router.post("/adminLogin", authController.adminLogin);
+router.get("/me", authenticate, authController.getMe);
 
 module.exports = router;

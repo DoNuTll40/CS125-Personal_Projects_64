@@ -39,7 +39,7 @@ model Users {
   user_image     String   @default("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQJxKGGpPc9-5g25KWwnsCCy9O_dlS4HWo5A&usqp=CAU")
   class          Class    @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: Cascade)
   class_id       Int
-  table          table[]
+  table          schedule[]
 
   @@map("users")
 }
@@ -47,13 +47,12 @@ model Users {
 model Subject {
   sub_id   Int     @id @default(autoincrement())
   sub_name String
-  sub_day  String
-  sub_time String?
+  sub_code String
   room     Room    @relation(fields: [room_id], references: [room_id], onDelete: Cascade, onUpdate: Cascade)
   room_id  Int
   major    Major   @relation(fields: [Major_id], references: [major_id], onDelete: Cascade, onUpdate: Cascade)
   Major_id Int     @map("major_id")
-  table    table[]
+  table    schedule[]
 
   @@map("subject")
 }
@@ -96,21 +95,21 @@ model Section {
 }
 
 model Class {
-  class_id     Int     @id @default(autoincrement())
-  class_number String
-  section      Section @relation(fields: [sec_id], references: [sec_id], onDelete: Cascade, onUpdate: Cascade)
-  sec_id       Int
-  Users        Users[]
-  table        table[]
+  class_id   Int        @id @default(autoincrement())
+  class_name String
+  section    Section    @relation(fields: [sec_id], references: [sec_id], onDelete: Cascade, onUpdate: Cascade)
+  sec_id     Int
+  Users      Users[]
+  table      schedule[]
 
   @@map("class")
 }
 
-model table {
-  table_id    Int     @id @default(autoincrement())
-  table_day   String
-  table_time  String
-  table_count Int     @default(1)
+model schedule {
+  sched_id    Int     @id @default(autoincrement())
+  sched_day   String
+  sched_time  String
+  sched_count Int     @default(1)
   class       Class   @relation(fields: [Class_id], references: [class_id], onDelete: Cascade, onUpdate: Cascade)
   Class_id    Int     @map("class_id")
   subject     Subject @relation(fields: [Sub_id], references: [sub_id], onDelete: Cascade, onUpdate: Cascade)
