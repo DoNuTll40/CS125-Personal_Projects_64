@@ -49,7 +49,7 @@ exports.login = async (req, res, next) => {
     const isPasswordExist = await bcrypt.compare(password, isUsernameExist.user_password);
 
     if(isUsernameExist.user_role !== "USER"){
-      return createError(400, "role not found")
+      return createError(400, "ไม่อนุญาติให้ผู้ใช้ Login หน้านี้")
     }
 
     if (!isUsernameExist || !isPasswordExist) {
@@ -86,7 +86,7 @@ exports.adminLogin = async (req, res, next) => {
     const isPasswordExist = await bcrypt.compare(password, isUsernameExist.user_password);
 
     if(isUsernameExist.user_role === "USER"){
-      return createError(400, "role not found")
+      return createError(400, "ไม่อนุญาติให้ผู้ใช้ Login หน้านี้")
     }
 
     if (!isUsernameExist || !isPasswordExist) {

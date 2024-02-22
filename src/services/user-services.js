@@ -5,6 +5,9 @@ exports.getUserById = (id) => {
     where: {
       user_id: id,
     },
+    include:{
+      class: true
+    }
   });
 };
 

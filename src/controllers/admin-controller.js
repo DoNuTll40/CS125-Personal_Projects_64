@@ -3,7 +3,8 @@ const createError = require("../utils/createError");
 const { createUser, createSections } = require("../validators/admin-validator");
 const bcrypt = require("bcryptjs");
 
-exports.getSubject = (req, res, next) => {
+exports.getSubject = async (req, res, next) => {
+  const sub = await prisma.subject.findMany()
   res.json({ sub, message: "get sub" });
 };
 
@@ -13,7 +14,11 @@ exports.createSubject = (req, res, next) => {
 };
 
 exports.getUsers = async (req, res, next) => {
-  const user = await prisma.users.findMany();
+  const user = await prisma.users.findMany({
+    include: {
+      class: true
+    }
+  });
   res.json({ user });
 };
 

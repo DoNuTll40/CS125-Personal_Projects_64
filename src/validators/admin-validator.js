@@ -14,6 +14,7 @@ exports.createUser = joi.object({
     user_brithday: joi.string().required(),
     confirmPassword: joi.string().required().strip(),
     user_identity: joi.string().required(),
+    user_image: joi.string().required().strip(),
     class_id: joi.number().required().strip()
 });
 

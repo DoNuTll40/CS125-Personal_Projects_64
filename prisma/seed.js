@@ -1,3 +1,4 @@
+
 const prisma = require("../src/configs/prisma");
 const bcrypt = require("bcryptjs");
 
@@ -72,7 +73,7 @@ const addUser = [
     user_address: "123, Thailand",
     user_brithday: "1990-12-30T00:00:00.000Z",
     user_identity: "4538900XXXXX9",
-    class_id: 4,
+    class_id: 3,
   },
   {
     user_username: "teacher04",
@@ -86,7 +87,7 @@ const addUser = [
     user_address: "123, Thailand",
     user_brithday: "1999-06-28T00:00:00.000Z",
     user_identity: "4567890XXXXX2",
-    class_id: 4,
+    class_id: 3,
   },
   {
     user_username: "teacher05",
@@ -100,7 +101,7 @@ const addUser = [
     user_address: "123, Thailand",
     user_brithday: "1989-09-09T00:00:00.000Z",
     user_identity: "4983210XXXXX8",
-    class_id: 4,
+    class_id: 3,
   },
   {
     user_username: "teacher06",
@@ -114,7 +115,7 @@ const addUser = [
     user_address: "123, Thailand",
     user_brithday: "1996-05-20T00:00:00.000Z",
     user_identity: "4567320XXXXX1",
-    class_id: 4,
+    class_id: 3,
   },
   {
     user_username: "teacher07",
@@ -128,7 +129,7 @@ const addUser = [
     user_address: "123, Thailand",
     user_brithday: "1976-12-10T00:00:00.000Z",
     user_identity: "3256780XXXXX2",
-    class_id: 4,
+    class_id: 3,
   },
   {
     user_username: "teacher08",
@@ -142,7 +143,7 @@ const addUser = [
     user_address: "123, Thailand",
     user_brithday: "1999-05-08T00:00:00.000Z",
     user_identity: "2546800XXXXX1",
-    class_id: 4,
+    class_id: 3,
   },
   {
     user_username: "teacher09",
@@ -156,7 +157,7 @@ const addUser = [
     user_address: "123, Thailand",
     user_brithday: "1985-05-30T00:00:00.000Z",
     user_identity: "3452800XXXXX7",
-    class_id: 4,
+    class_id: 3,
   },
   {
     user_username: "teacher10",
@@ -170,7 +171,7 @@ const addUser = [
     user_address: "123, Thailand",
     user_brithday: "1982-01-01T00:00:00.000Z",
     user_identity: "5660800XXXXX6",
-    class_id: 4,
+    class_id: 3,
   },
   {
     user_username: "teacher11",
@@ -184,7 +185,7 @@ const addUser = [
     user_address: "123, Thailand",
     user_brithday: "1978-03-12T00:00:00.000Z",
     user_identity: "3245800XXXXX4",
-    class_id: 4,
+    class_id: 3,
   },
   {
     user_username: "teacher12",
@@ -198,7 +199,7 @@ const addUser = [
     user_address: "123, Thailand",
     user_brithday: "1981-02-27T00:00:00.000Z",
     user_identity: "2398100XXXXX2",
-    class_id: 4,
+    class_id: 3,
   },
   {
     user_username: "teacher13",
@@ -212,7 +213,7 @@ const addUser = [
     user_address: "123, Thailand",
     user_brithday: "1985-05-22T00:00:00.000Z",
     user_identity: "2113800XXXXX5",
-    class_id: 4,
+    class_id: 3,
   },
   {
     user_username: "teacher14",
@@ -226,7 +227,7 @@ const addUser = [
     user_address: "123, Thailand",
     user_brithday: "1982-12-01T00:00:00.000Z",
     user_identity: "1278900XXXXX4",
-    class_id: 4,
+    class_id: 3,
   },
   {
     user_username: "teacher15",
@@ -240,7 +241,7 @@ const addUser = [
     user_address: "123, Thailand",
     user_brithday: "1997-07-06T00:00:00.000Z",
     user_identity: "5642800XXXXX1",
-    class_id: 4,
+    class_id: 3,
   },
   {
     user_username: "teacher16",
@@ -254,7 +255,7 @@ const addUser = [
     user_address: "123, Thailand",
     user_brithday: "1998-05-08T00:00:00.000Z",
     user_identity: "3582800XXXXX4",
-    class_id: 4,
+    class_id: 3,
   },
   {
     user_username: "admin",
@@ -274,10 +275,10 @@ const addUser = [
 ];
 
 const addClass = [
-  { class_name: "ม.1/1", sec_id: 3 },
-  { class_name: "ม.1/3", sec_id: 3 },
-  { class_name: "ADMIN", sec_id: 4 },
-  { class_name: "ไม่มีห้อง", sec_id: 3 },
+  {class_id: 1, class_name: "ม.1/1", sec_id: 3 },
+  {class_id: 2, class_name: "ม.1/3", sec_id: 3 },
+  {class_id: 3, class_name: "ไม่มีห้อง", sec_id: 3 },
+  {class_id: 125, class_name: "ADMIN", sec_id: 4 },
 ];
 
 const addBuilds = [
@@ -324,7 +325,7 @@ const addRoom = [
   {room_name: "ห้องประชุม-01", room_number: "511", build_id: 5},
   {room_name: "ห้องประชุม-02", room_number: "512", build_id: 5},
   {room_name: "ห้องประชุม-03", room_number: "513", build_id: 5},
-  {room_name: "ใต้โดรม", room_number: "-", build_id: 6},
+  {room_name: "ใต้โดรม", room_number: "611", build_id: 6},
 ]
 
 
@@ -358,7 +359,6 @@ const addSubject = [
   {sub_name: "แนะแนว", sub_code: "-", room_id: 5, major_id: 10},
   {sub_name: "ลูกเสือ", sub_code: "-", room_id: 28, major_id: 9},
   {sub_name: "ชุมนุม", sub_code: "-", room_id: 25, major_id: 9},
-  {sub_name: "ชุมนุม", sub_code: "-", room_id: 25, major_id: 9},
   {sub_name: "วิทยาศาสตร์-02", sub_code: "ว21102", room_id: 14, major_id: 2},
   {sub_name: "ภาษาไทยเพื่อการสื่อสาร", sub_code: "ท21202", room_id: 15, major_id: 3},
   {sub_name: "พื้นฐานนาฏศิลป์ไทย", sub_code: "ศ21204", room_id: 16, major_id: 7},
@@ -366,7 +366,34 @@ const addSubject = [
 ]
 
 const addSchedule = [
-  {sched_day: "", sched_time: "", sched_count: "", class_id: "", sub_id: "", user_id: ""},
+  {sched_day: "จันทร์", sched_time: "08:30-09:30", class_id: 1, sub_id: 1, user_id: 5},
+  {sched_day: "จันทร์", sched_time: "09:30-10:30", class_id: 1, sub_id: 2, user_id: 6},
+  {sched_day: "จันทร์", sched_time: "10:30-11:30", class_id: 1, sub_id: 3, user_id: 7},
+  {sched_day: "จันทร์", sched_time: "11:30-12:30", class_id: 1, sub_id: 4, user_id: 8},
+  {sched_day: "จันทร์", sched_time: "13:30-15:30", class_id: 1, sub_id: 5, user_id: 3, sched_count: 2},
+  {sched_day: "อังคาร", sched_time: "08:30-09:30", class_id: 1, sub_id: 6, user_id: 9},
+  {sched_day: "อังคาร", sched_time: "09:30-10:30", class_id: 1, sub_id: 7, user_id: 10},
+  {sched_day: "อังคาร", sched_time: "10:30-11:30", class_id: 1, sub_id: 8, user_id: 11},
+  {sched_day: "อังคาร", sched_time: "11:30-12:30", class_id: 1, sub_id: 9, user_id: 12},
+  {sched_day: "อังคาร", sched_time: "13:30-15:30", class_id: 1, sub_id: 10, user_id: 13, sched_count: 2},
+  {sched_day: "พุธ", sched_time: "08:30-09:30", class_id: 1, sub_id: 2, user_id: 6},
+  {sched_day: "พุธ", sched_time: "09:30-10:30", class_id: 1, sub_id: 8, user_id: 11},
+  {sched_day: "พุธ", sched_time: "10:30-11:30", class_id: 1, sub_id: 4, user_id: 8},
+  {sched_day: "พุธ", sched_time: "11:30-12:30", class_id: 1, sub_id: 6, user_id: 9},
+  {sched_day: "พุธ", sched_time: "13:30-14:30", class_id: 1, sub_id: 9, user_id: 12},
+  {sched_day: "พุธ", sched_time: "14:30-15:30", class_id: 1, sub_id: 14, user_id: 3},
+  {sched_day: "พฤหัสบดี", sched_time: "08:30-09:30", class_id: 1, sub_id: 9, user_id: 12},
+  {sched_day: "พฤหัสบดี", sched_time: "09:30-10:30", class_id: 1, sub_id: 18, user_id: 8},
+  {sched_day: "พฤหัสบดี", sched_time: "10:30-11:30", class_id: 1, sub_id: 20, user_id: 5},
+  {sched_day: "พฤหัสบดี", sched_time: "11:30-12:30", class_id: 1, sub_id: 11, user_id: 14},
+  {sched_day: "พฤหัสบดี", sched_time: "13:30-14:30", class_id: 1, sub_id: 12, user_id: 15},
+  {sched_day: "พฤหัสบดี", sched_time: "14:30-15:30", class_id: 1, sub_id: 15, user_id: 7},
+  {sched_day: "ศุกร์", sched_time: "08:30-09:30", class_id: 1, sub_id: 2, user_id: 6},
+  {sched_day: "ศุกร์", sched_time: "09:30-10:30", class_id: 1, sub_id: 4, user_id: 8},
+  {sched_day: "ศุกร์", sched_time: "10:30-11:30", class_id: 1, sub_id: 6, user_id: 9},
+  {sched_day: "ศุกร์", sched_time: "11:30-12:30", class_id: 1, sub_id: 13, user_id: 16},
+  {sched_day: "ศุกร์", sched_time: "13:30-14:30", class_id: 1, sub_id: 10, user_id: 13},
+  {sched_day: "ศุกร์", sched_time: "14:30-15:30", class_id: 1, sub_id: 16, user_id: 19},
 ]
 
 const sectionAdd = async () => {
@@ -391,6 +418,61 @@ const classAdd = async () => {
   }
 };
 
-// sectionAdd();
-// classAdd();
-// userAdd();
+const majorAdd = async () => {
+  try {
+    await prisma.major.createMany({
+      data: addMajor,
+    })
+  }catch(err){
+    console.log(err)
+  }
+}
+
+const subjectAdd = async () => {
+  try {
+    await prisma.subject.createMany({
+      data: addSubject,
+    });
+  }catch(err){
+    console.log(err);
+  }
+};
+
+const buildAdd = async () => {
+  try {
+    await prisma.builds.createMany({
+      data: addBuilds,
+    })
+  }catch(err){
+    console.log(err)
+  }
+}
+
+const roomAdd = async () => {
+  try {
+    await prisma.room.createMany({
+      data: addRoom,
+    })
+  }catch(err){
+    console.log(err);
+  }
+};
+
+const scheduleAdd = async () => {
+  try {
+    await prisma.schedule.createMany({
+      data: addSchedule,
+    })
+  }catch(err){
+    console.log(err)
+  }
+}
+
+sectionAdd();
+classAdd();
+buildAdd();
+roomAdd();
+subjectAdd();
+majorAdd();
+userAdd();
+scheduleAdd();
