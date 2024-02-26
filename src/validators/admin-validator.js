@@ -12,9 +12,9 @@ exports.createUser = joi.object({
     user_phone: joi.string().required(),
     user_address: joi.string().required(),
     user_brithday: joi.string().required(),
-    confirmPassword: joi.string().required().strip(),
+    confirmPassword: joi.string().strip(),
     user_identity: joi.string().required(),
-    user_image: joi.string().required().strip(),
+    user_image: joi.string().empty('').default("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQJxKGGpPc9-5g25KWwnsCCy9O_dlS4HWo5A&usqp=CAU"),
     class_id: joi.number().required().strip()
 });
 
