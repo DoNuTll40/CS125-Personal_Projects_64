@@ -6,17 +6,53 @@ const {
   createUser,
   createSections,
   updateUser,
+  createSchedule,
+  createSchedules,
+  createSubjects,
+  createRooms,
+  createBuilds,
 } = require("../validators/admin-validator");
 const bcrypt = require("bcryptjs");
 
 exports.getSubject = async (req, res, next) => {
-  const sub = await prisma.subject.findMany();
+  const sub = await prisma.subject.findMany({
+    include: {
+      major: true,
+      room: true,
+    },
+  });
   res.json({ sub, message: "get sub" });
 };
 
-exports.createSubject = (req, res, next) => {
-  const { name, number, major_id } = req.body;
-  res.json({ name, number, major_id, message: "create sub" });
+exports.createSubject = async (req, res, next) => {
+  try {
+    const value = await createSubjects.validateAsync(req.body);
+    const { major_id, room_id } = req.body;
+    const cSub = await prisma.subject.create({
+      data: {
+        ...value,
+        room_id: Number(room_id),
+        major_id: Number(major_id),
+      },
+    });
+    res.json({ cSub, message: "create sub" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteSubjects = async (req, res, next) => {
+  try {
+    const { subjectId } = req.params;
+    const deleteSub = await prisma.subject.delete({
+      where: {
+        sub_id: Number(subjectId),
+      },
+    });
+    res.json({ deleteSub });
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.getUsers = async (req, res, next) => {
@@ -99,6 +135,11 @@ exports.editUserById = async (req, res, next) => {
         },
       },
     });
+
+    // req.files.forEach((file) => {
+    //   fs.unlinkSync(file.path);
+    // });
+
     res.json({ edit });
   } catch (err) {
     next(err);
@@ -106,8 +147,9 @@ exports.editUserById = async (req, res, next) => {
   }
 };
 
-exports.getMajor = (req, res, next) => {
-  res.json({ message: "Get Major" });
+exports.getMajor = async (req, res, next) => {
+  const major = await prisma.major.findMany();
+  res.json({ major, message: "Get Major" });
 };
 
 exports.createMajor = (req, res, next) => {
@@ -127,17 +169,91 @@ exports.getBuilds = async (req, res, next) => {
   res.json({ builds });
 };
 
-exports.createBuilds = (req, res, next) => {
-  res.json({ message: "Create Builds" });
+exports.createBuild = async (req, res, next) => {
+  try {
+    const value = await createBuilds.validateAsync(req.body)
+
+    const imagePromise = req.files.map((file) => {
+      return cloudUpload(file.path);
+    });
+
+    const imageUrlArray = await Promise.all(imagePromise);
+    const cBuild = await prisma.builds.create({
+      data: {
+        ...value,
+        build_image: imageUrlArray[0]
+      }
+    })
+
+    res.json({ cBuild, message: "Create Builds" });
+  } catch (err) {
+    next();
+    console.log(err);
+    return createError(400, "Error create build");
+  }
 };
 
+exports.deleteBuild = async (req, res, next) => {
+  try {
+    const { buildId } = req.params;
+    const dDelete = await prisma.builds.delete({
+      where: {
+        build_id: Number(buildId),
+      }
+    })
+    res.json({ dDelete })
+  }catch(err){
+    next()
+    console.log(err)
+    return createError(400, "Error delete build")
+  }
+}
+
 exports.getRoom = async (req, res, next) => {
-  const rooms = await prisma.room.findMany({}); // ถ้าจะกำหนด limit ใช้ take ในการ limit
+  const rooms = await prisma.room.findMany({
+    include: {
+      build: true,
+    },
+  }); // ถ้าจะกำหนด limit ใช้ take ในการ limit
   res.json({ rooms, message: "Get Rooms" });
 };
 
-exports.createRoom = (req, res, next) => {
-  res.json({ message: "Create Rooms" });
+exports.createRoom = async (req, res, next) => {
+  try {
+    const value = await createRooms.validateAsync(req.body);
+    const { build_id } = req.body;
+    const room = await prisma.room.create({
+      data: {
+        ...value,
+        build: {
+          connect: {
+            build_id: Number(build_id),
+          },
+        },
+      },
+    });
+    res.json({ room, message: "Create Rooms" });
+  } catch (err) {
+    next(err);
+    console.log(err);
+    return createError(400, "Error create room");
+  }
+};
+
+exports.deleteRoom = async (req, res, next) => {
+  try {
+    const { roomId } = req.params;
+    const removeRoom = await prisma.room.delete({
+      where: {
+        room_id: Number(roomId),
+      },
+    });
+    res.json({ removeRoom });
+  } catch (err) {
+    next(err);
+    console.log(err);
+    createError(400, "Error delete room");
+  }
 };
 
 exports.getClass = async (req, res, next) => {
@@ -166,7 +282,6 @@ exports.getClassByID = async (req, res, next) => {
 exports.deleteUsers = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    console.log(userId);
     const dUsers = await prisma.users.delete({
       where: {
         user_id: Number(userId),
@@ -218,11 +333,11 @@ exports.getSchedule = async (req, res, next) => {
           include: {
             room: {
               include: {
-                build: true
-              }
+                build: true,
+              },
             },
-            major: true
-          }
+            major: true,
+          },
         },
       },
     });
@@ -230,5 +345,36 @@ exports.getSchedule = async (req, res, next) => {
   } catch (err) {
     next(err);
     createError(400, "Error Get Schedule");
+  }
+};
+
+exports.createSchedule = async (req, res, next) => {
+  try {
+    const value = await createSchedules.validateAsync(req.body);
+    const createSchedule = await prisma.schedule.create({
+      data: {
+        ...value,
+      },
+    });
+    console.log(createSchedule);
+    res.json({ createSchedule });
+  } catch (err) {
+    next(err);
+    console.log(err);
+  }
+};
+
+exports.deleteSchedule = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const rs = await prisma.schedule.delete({
+      where: {
+        sched_id: +id,
+      },
+    });
+    res.json({ rs });
+  } catch (err) {
+    next(err);
+    console.log(err);
   }
 };

@@ -18,10 +18,9 @@ exports.createUser = joi.object({
     class_id: joi.number().required().strip()
 });
 
-exports.createSubject = joi.object({
+exports.createSubjects = joi.object({
     sub_name: joi.string().required(),
-    sub_day: joi.string().required(),
-    sub_time: joi.string().required(),
+    sub_code: joi.string().required(),
     room_id: joi.number().required().strip(),
     major_id: joi.number().required().strip()
 });
@@ -37,11 +36,20 @@ exports.createSections = joi.object({
 exports.createBuilds = joi.object({
     build_name: joi.string().required(),
     build_number: joi.string().required(),
-    build_image: joi.string().required()
+    build_image: joi.string().strip(),
 });
 
-exports.createRoom = joi.object({
+exports.createRooms = joi.object({
     room_name: joi.string().required(),
-    room_number: joi.number().required(),
+    room_number: joi.string().required(),
     build_id: joi.number().required().strip()
 });
+
+exports.createSchedules = joi.object({
+    sched_day: joi.string().required(),
+    sched_time: joi.string().required(),
+    sched_count: joi.number().required(),
+    class_id: joi.number().required(),
+    sub_id: joi.number().required(),
+    user_id: joi.number().required()
+})
