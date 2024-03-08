@@ -4,9 +4,6 @@ const cloudUpload = require("../utils/cloudupload");
 const createError = require("../utils/createError");
 const {
   createUser,
-  createSections,
-  updateUser,
-  createSchedule,
   createSchedules,
   createSubjects,
   createRooms,
@@ -171,7 +168,7 @@ exports.getBuilds = async (req, res, next) => {
 
 exports.createBuild = async (req, res, next) => {
   try {
-    const value = await createBuilds.validateAsync(req.body)
+    const value = await createBuilds.validateAsync(req.body);
 
     const imagePromise = req.files.map((file) => {
       return cloudUpload(file.path);
@@ -181,9 +178,9 @@ exports.createBuild = async (req, res, next) => {
     const cBuild = await prisma.builds.create({
       data: {
         ...value,
-        build_image: imageUrlArray[0]
-      }
-    })
+        build_image: imageUrlArray[0],
+      },
+    });
 
     res.json({ cBuild, message: "Create Builds" });
   } catch (err) {
@@ -199,15 +196,15 @@ exports.deleteBuild = async (req, res, next) => {
     const dDelete = await prisma.builds.delete({
       where: {
         build_id: Number(buildId),
-      }
-    })
-    res.json({ dDelete })
-  }catch(err){
-    next()
-    console.log(err)
-    return createError(400, "Error delete build")
+      },
+    });
+    res.json({ dDelete });
+  } catch (err) {
+    next();
+    console.log(err);
+    return createError(400, "Error delete build");
   }
-}
+};
 
 exports.getRoom = async (req, res, next) => {
   const rooms = await prisma.room.findMany({
@@ -351,13 +348,31 @@ exports.getSchedule = async (req, res, next) => {
 exports.createSchedule = async (req, res, next) => {
   try {
     const value = await createSchedules.validateAsync(req.body);
-    const createSchedule = await prisma.schedule.create({
-      data: {
-        ...value,
+
+    const checkSched = await prisma.schedule.findMany({
+      where: {
+        AND: [
+          { class_id: value.class_id },
+          { sched_day: value.sched_day },
+          { sched_time: value.sched_time },
+        ],
       },
     });
-    console.log(createSchedule);
-    res.json({ createSchedule });
+    console.log(checkSched);
+    if (checkSched.length > 0) {
+      const output = checkSched.map( el => ({
+        sched_day: el.sched_day,
+        sched_time: el.sched_time,
+      }))
+      createError(400, `ระบบไม่สามารถเพิ่มข้อมูลได้เนื่องจากมีรายการที่ซ้ำกันกับข้อมูลก่อนหน้านี้ ${JSON.stringify(output)}`);
+    }
+
+    // const createSchedule = await prisma.schedule.create({
+    //   data: {
+    //     ...value,
+    //   },
+    // });
+    res.json({ checkSched });
   } catch (err) {
     next(err);
     console.log(err);
@@ -376,5 +391,37 @@ exports.deleteSchedule = async (req, res, next) => {
   } catch (err) {
     next(err);
     console.log(err);
+  }
+};
+
+exports.teacherSchedule = async (req, res, next) => {
+  try {
+    const getSchedule = await prisma.schedule.findMany({
+      include: {
+        class: {
+          include: {
+            section: true,
+          },
+        },
+        subject: {
+          include: {
+            major: true,
+            room: {
+              include: {
+                build: true,
+              },
+            },
+          },
+        },
+      },
+      where: {
+        user_id: Number(req.user.user_id),
+      },
+    });
+    res.json({ getSchedule });
+  } catch (err) {
+    next(err);
+    console.log(err);
+    createError(400, "Error teacher schedule");
   }
 };

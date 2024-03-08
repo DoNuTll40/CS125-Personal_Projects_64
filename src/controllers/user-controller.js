@@ -23,7 +23,6 @@ exports.table = async (req, res, next) => {
 exports.getTableById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    // console.log(id)
     const schedule = await prisma.schedule.findFirst({
       where: {
         sched_id: Number(id),

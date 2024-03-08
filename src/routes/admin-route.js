@@ -15,6 +15,7 @@ router.get("/rooms", adminControllers.getRoom);
 router.get("/class", adminControllers.getClass);
 router.get("/class/:id", adminControllers.getClassByID);
 router.get("/schedule/:id", adminControllers.getSchedule);
+router.get("/teacher/schedule", adminControllers.teacherSchedule);
 
 // Path Create
 router.post("/subject", adminControllers.createSubject);

@@ -24,22 +24,23 @@ enum sType {
 }
 
 model Users {
-  user_id        Int        @id @default(autoincrement())
-  user_username  String
-  user_password  String
-  user_role      Role       @default(USER)
-  user_firstname String
-  user_lastname  String
-  user_nickname  String
-  user_email     String
-  user_phone     String
-  user_address   String
-  user_brithday  DateTime   @db.Date
-  user_identity  String     @unique @db.VarChar(16)
-  user_image     String     @default("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQJxKGGpPc9-5g25KWwnsCCy9O_dlS4HWo5A&usqp=CAU")
-  class          Class      @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: Cascade)
-  class_id       Int
-  table          schedule[]
+  user_id         Int        @id @default(autoincrement())
+  user_username   String
+  user_password   String
+  user_role       Role       @default(USER)
+  user_nameprefix String     @db.VarChar(50)
+  user_firstname  String
+  user_lastname   String
+  user_nickname   String
+  user_email      String
+  user_phone      String
+  user_address    String
+  user_brithday   DateTime   @db.Date
+  user_identity   String     @unique @db.VarChar(16)
+  user_image      String     @default("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQJxKGGpPc9-5g25KWwnsCCy9O_dlS4HWo5A&usqp=CAU")
+  class           Class      @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: Cascade)
+  class_id        Int
+  table           schedule[]
 
   @@map("users")
 }
