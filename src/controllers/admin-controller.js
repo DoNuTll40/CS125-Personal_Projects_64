@@ -316,6 +316,32 @@ exports.updateProfile = async (req, res, next) => {
   }
 };
 
+exports.updateProfileById = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const imagePromise = req.files.map((file) => {
+      return cloudUpload(file.path);
+    });
+
+    const imageUrlArray = await Promise.all(imagePromise);
+
+    const updateProfile = await prisma.users.update({
+      where: { user_id: +userId },
+      data: {
+        user_image: imageUrlArray[0],
+      },
+    });
+
+    req.files.forEach((file) => {
+      fs.unlinkSync(file.path);
+    });
+
+    res.json({ updateProfile });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.getSchedule = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -358,7 +384,7 @@ exports.createSchedule = async (req, res, next) => {
         ],
       },
     });
-    console.log(checkSched);
+    
     if (checkSched.length > 0) {
       const output = checkSched.map( el => ({
         sched_day: el.sched_day,
@@ -367,12 +393,12 @@ exports.createSchedule = async (req, res, next) => {
       createError(400, `ระบบไม่สามารถเพิ่มข้อมูลได้เนื่องจากมีรายการที่ซ้ำกันกับข้อมูลก่อนหน้านี้ ${JSON.stringify(output)}`);
     }
 
-    // const createSchedule = await prisma.schedule.create({
-    //   data: {
-    //     ...value,
-    //   },
-    // });
-    res.json({ checkSched });
+    const createSchedule = await prisma.schedule.create({
+      data: {
+        ...value,
+      },
+    });
+    res.json({ createSchedule });
   } catch (err) {
     next(err);
     console.log(err);
@@ -398,6 +424,7 @@ exports.teacherSchedule = async (req, res, next) => {
   try {
     const getSchedule = await prisma.schedule.findMany({
       include: {
+        user: true,
         class: {
           include: {
             section: true,

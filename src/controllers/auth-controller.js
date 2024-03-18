@@ -1,4 +1,3 @@
-
 const createError = require("../utils/createError");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -35,6 +34,7 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   try {
     const { username, password } = req.body;
+    console.log(req.body);
 
     if (!username || !password) {
       return createError(400, "username or password are require");
@@ -45,10 +45,15 @@ exports.login = async (req, res, next) => {
     }
 
     const isUsernameExist = await userService.checkLoginUsername(username);
+
+    if (isUsernameExist === null){
+      return createError(400, "ชื่อไม่พบผู้ใช้งานบบ")
+    }
+
     const isPasswordExist = await bcrypt.compare(password, isUsernameExist.user_password);
 
-    if(isUsernameExist.user_role !== "USER"){
-      return createError(400, "ไม่อนุญาติให้ผู้ใช้ Login หน้านี้")
+    if (isUsernameExist.user_role !== "USER") {
+      return createError(400, "ไม่อนุญาติให้ผู้ใช้ Login หน้านี้");
     }
 
     if (!isUsernameExist || !isPasswordExist) {
@@ -82,10 +87,13 @@ exports.adminLogin = async (req, res, next) => {
     }
 
     const isUsernameExist = await userService.checkLoginUsername(username);
-    const isPasswordExist = await bcrypt.compare(password, isUsernameExist.user_password);
+    const isPasswordExist = await bcrypt.compare(
+      password,
+      isUsernameExist.user_password
+    );
 
-    if(isUsernameExist.user_role === "USER"){
-      return createError(400, "ไม่อนุญาติให้ผู้ใช้ Login หน้านี้")
+    if (isUsernameExist.user_role === "USER") {
+      return createError(400, "ไม่อนุญาติให้ผู้ใช้ Login หน้านี้");
     }
 
     if (!isUsernameExist || !isPasswordExist) {

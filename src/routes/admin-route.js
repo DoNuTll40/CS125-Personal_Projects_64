@@ -29,6 +29,7 @@ router.post("/schedule", adminControllers.createSchedule);
 // Path Edit
 router.patch("/users/:userId", adminControllers.editUserById);
 router.patch('/profile', upload.array("profileImage", 1), adminControllers.updateProfile)
+router.patch('/profile/:userId', upload.array("profileImage", 1), adminControllers.updateProfileById)
 
 // Path Delete
 router.delete("/subject/:subjectId", adminControllers.deleteSubjects)
