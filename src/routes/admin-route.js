@@ -25,6 +25,7 @@ router.post("/sections", adminControllers.createSections);
 router.post("/builds", upload.array("imageBuild", 1),adminControllers.createBuild);
 router.post("/rooms", adminControllers.createRoom);
 router.post("/schedule", adminControllers.createSchedule);
+router.post("/class", adminControllers.createClass);
 
 // Path Edit
 router.patch("/users/:userId", adminControllers.editUserById);
@@ -37,6 +38,7 @@ router.delete("/users/:userId", adminControllers.deleteUsers);
 router.delete("/schedule/:id", adminControllers.deleteSchedule);
 router.delete("/rooms/:roomId", adminControllers.deleteRoom);
 router.delete("/builds/:buildId", adminControllers.deleteBuild)
+router.delete("/class/:classId", adminControllers.deleteClassById)
 // router.delete("/teachers/:teacherId", adminControllers)
 // router.delete("/major/:majorId", adminControllers)
 // router.delete("/sections/:sectionId", adminControllers)

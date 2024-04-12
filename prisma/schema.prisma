@@ -36,7 +36,7 @@ model Users {
   user_phone      String
   user_address    String
   user_brithday   DateTime   @db.Date
-  user_identity   String     @unique @db.VarChar(16)
+  user_identity   String     @unique @db.VarChar(17)
   user_image      String     @default("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQJxKGGpPc9-5g25KWwnsCCy9O_dlS4HWo5A&usqp=CAU")
   class           Class      @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: Cascade)
   class_id        Int

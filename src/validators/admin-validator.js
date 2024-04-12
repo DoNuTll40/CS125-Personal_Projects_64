@@ -53,4 +53,9 @@ exports.createSchedules = joi.object({
     class_id: joi.number().required(),
     sub_id: joi.number().required(),
     user_id: joi.number().required()
+});
+
+exports.createClassrooms = joi.object({
+    class_name: joi.string().required(),
+    sec_id: joi.number().required().strip(),
 })

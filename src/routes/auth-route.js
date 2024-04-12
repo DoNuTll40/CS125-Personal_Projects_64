@@ -4,7 +4,6 @@ const router = express.Router();
 const authController = require("../controllers/auth-controller");
 const admin = require("../middlewares/admin");
 const authenticate = require("../middlewares/authenticate");
-const prisma = require("../configs/prisma");
 
 router.post("/register", authenticate, admin, authController.register);
 router.post("/login", authController.login);

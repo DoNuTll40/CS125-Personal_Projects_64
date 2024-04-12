@@ -8,6 +8,7 @@ const {
   createSubjects,
   createRooms,
   createBuilds,
+  createClassrooms,
 } = require("../validators/admin-validator");
 const bcrypt = require("bcryptjs");
 
@@ -133,9 +134,9 @@ exports.editUserById = async (req, res, next) => {
       },
     });
 
-    // req.files.forEach((file) => {
-    //   fs.unlinkSync(file.path);
-    // });
+    req.files.forEach((file) => {
+      fs.unlinkSync(file.path);
+    });
 
     res.json({ edit });
   } catch (err) {
@@ -254,7 +255,11 @@ exports.deleteRoom = async (req, res, next) => {
 };
 
 exports.getClass = async (req, res, next) => {
-  const useClass = await prisma.class.findMany();
+  const useClass = await prisma.class.findMany({
+    include: {
+      section: true,
+    },
+  });
   res.json({ useClass, message: "Get Rooms" });
 };
 
@@ -270,6 +275,52 @@ exports.getClassByID = async (req, res, next) => {
       },
     });
     res.json({ useClass, message: "Get Rooms" });
+  } catch (err) {
+    next(err);
+    console.log(err);
+  }
+};
+
+exports.createClass = async (req, res, next) => {
+  try {
+    const { sec_id } = req.body;
+    const value = await createClassrooms.validateAsync(req.body);
+    const checkClass = await prisma.class.findFirst({
+      where: {
+        class_name: value.class_name,
+      },
+    });
+
+    if (checkClass) {
+      return createError(400, "หมายเลขชั้นมีการซ้ำกัน โปรดตรวจสอบแล้วทำรายการใหม่")
+    } else {
+      const createC = await prisma.class.create({
+        data: {
+          ...value,
+          section: {
+            connect: {
+              sec_id: +sec_id,
+            },
+          },
+        },
+      });
+      res.json({ createC, message: "Create class successful" });
+    }
+  } catch (err) {
+    next(err);
+    console.log(err);
+  }
+};
+
+exports.deleteClassById = async (req, res, next) => {
+  try {
+    const { classId } = req.params;
+    const deleteClass = await prisma.class.delete({
+      where: {
+        class_id: +classId,
+      },
+    });
+    res.json({ message: "Delete class success" });
   } catch (err) {
     next(err);
     console.log(err);
@@ -384,13 +435,18 @@ exports.createSchedule = async (req, res, next) => {
         ],
       },
     });
-    
+
     if (checkSched.length > 0) {
-      const output = checkSched.map( el => ({
+      const output = checkSched.map((el) => ({
         sched_day: el.sched_day,
         sched_time: el.sched_time,
-      }))
-      createError(400, `ระบบไม่สามารถเพิ่มข้อมูลได้เนื่องจากมีรายการที่ซ้ำกันกับข้อมูลก่อนหน้านี้ ${JSON.stringify(output)}`);
+      }));
+      createError(
+        400,
+        `ระบบไม่สามารถเพิ่มข้อมูลได้เนื่องจากมีรายการที่ซ้ำกันกับข้อมูลก่อนหน้านี้ ${JSON.stringify(
+          output
+        )}`
+      );
     }
 
     const createSchedule = await prisma.schedule.create({
@@ -444,6 +500,11 @@ exports.teacherSchedule = async (req, res, next) => {
       where: {
         user_id: Number(req.user.user_id),
       },
+      orderBy: [
+        {
+          sched_day: "asc",
+        },
+      ],
     });
     res.json({ getSchedule });
   } catch (err) {
