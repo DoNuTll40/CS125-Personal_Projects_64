@@ -118,3 +118,13 @@ model schedule {
   user        Users   @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: Cascade)
   user_id     Int
 }
+
+model banner {
+  b_id Int @id @default(autoincrement())
+  b_url String
+  b_header String
+  b_title String
+  b_status Int @default(0)
+  b_create_at DateTime @db.Timestamp()
+  b_enddate DateTime @db.DateTime()
+}

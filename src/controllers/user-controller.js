@@ -17,6 +17,7 @@ exports.table = async (req, res, next) => {
     res.json({ schedule, message: "welcome to my table" });
   } catch (err) {
     next(err);
+    console.log(err)
   }
 };
 
