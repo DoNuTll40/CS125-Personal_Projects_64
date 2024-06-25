@@ -317,6 +317,52 @@ exports.editUserById = async (req, res, next) => {
   }
 };
 
+exports.changPassword = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const { password, newPassword,  retypeNewPass } = req.body;
+
+    if(!password || !newPassword || !retypeNewPass){
+      return createError(400, "กรุณากรอกข้อมูลให้ครบ");
+    }
+
+    const checkUser = await prisma.users.findFirst({
+      where: {
+        user_id: Number(userId)
+      }
+    })
+
+    if(!checkUser){
+      return createError(400, "ไม่พบผู้ใช้งาน");
+    }
+
+    const checkPassword = await bcrypt.compare(password, checkUser.user_password);
+
+    if(!checkPassword){
+     return createError(400, "รหัสผ่านเดิมไม่ถูกต้อง โปรดเช็คอีกครั้ง");
+    }
+
+    if(newPassword !== retypeNewPass){
+      return createError(400, "รหัสผ่านไม่ตรงกัน");
+    }
+
+    const hashPassword = await bcrypt.hash(newPassword, 10);
+
+    const changePassword = await prisma.users.update({
+      where: {
+        user_id: Number(userId)
+      },
+      data: {
+        user_password: hashPassword
+      }
+    });
+
+    res.json({ result: "success", user: changePassword, updateAt: new Date().toLocaleDateString('th-TH') })
+  }catch(err){
+    next(err)
+  }
+}
+
 exports.getMajor = async (req, res, next) => {
   const major = await prisma.major.findMany();
   res.json({ major, message: "Get Major" });

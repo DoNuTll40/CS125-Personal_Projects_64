@@ -32,6 +32,7 @@ router.post("/banner", adminControllers.createBanner);
 
 // Path Edit
 router.patch("/users/:userId", adminControllers.editUserById);
+router.patch("/users/passwd/:userId", adminControllers.changPassword);
 router.patch('/profile', upload.array("profileImage", 1), adminControllers.updateProfile)
 router.patch('/profile/:userId', upload.array("profileImage", 1), adminControllers.updateProfileById)
 router.patch('/major/:majorId', adminControllers.updateMajors)
