@@ -24,6 +24,23 @@ exports.getSubject = async (req, res, next) => {
   res.json({ sub, message: "get sub" });
 };
 
+exports.getSubjectById = async (req, res, next) => {
+  try {
+    const { subId } = req.params;
+
+    const sub = await prisma.subject.findFirst({
+      where: {
+        sub_id: Number(subId)
+      }
+    })
+
+    res.json({ result: "success!", sub, datetime: new Date().toLocaleDateString('th-TH') });
+  }catch(err){
+    next(err)
+    console.log(err)
+  }
+}
+
 exports.createSubject = async (req, res, next) => {
   try {
     const value = await createSubjects.validateAsync(req.body);
@@ -320,6 +337,7 @@ exports.editUserById = async (req, res, next) => {
 exports.changPassword = async (req, res, next) => {
   try {
     const { userId } = req.params;
+    console.log(userId)
     const { password, newPassword,  retypeNewPass } = req.body;
 
     if(!password || !newPassword || !retypeNewPass){
@@ -472,6 +490,20 @@ exports.getBuilds = async (req, res, next) => {
   res.json({ builds });
 };
 
+exports.getBuildById = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const build = await prisma.builds.findFirst({
+      where: {
+        build_id: Number(id)
+      }
+    })
+    res.json({ build });
+  }catch(err){
+    console.log(err)
+  }
+};
+
 exports.createBuild = async (req, res, next) => {
   try {
     const value = await createBuilds.validateAsync(req.body);
@@ -559,6 +591,22 @@ exports.getRoom = async (req, res, next) => {
   res.json({ rooms, message: "Get Rooms" });
 };
 
+exports.getRoomById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const room = await prisma.room.findFirst({
+      where: {
+        room_id: Number(id)
+      }
+    })
+
+    res.json({ result: "success!", room, datetime: new Date().toLocaleDateString('th-TH') })
+  }catch(err){
+    next(err)
+    console.log(err)
+  }
+}
+
 exports.createRoom = async (req, res, next) => {
   try {
     const value = await createRooms.validateAsync(req.body);
@@ -594,7 +642,18 @@ exports.updateRoom = async (req, res, next) => {
     });
 
     if (!checkRoomId) {
-      return createError(400, "ระบบไม่พบเลข ID ห้องที่อยู่ในฐานข้อมูล");
+      return next(createError(400, "ระบบไม่พบเลข ID ห้องที่อยู่ในฐานข้อมูล"));
+    }
+
+    const checkRoomNumber = await prisma.room.findFirst({
+      where: {
+        room_number: value.room_number,
+        NOT: { room_id: Number(roomId) }
+      }
+    });
+
+    if (checkRoomNumber) {
+      return next(createError(400, "ข้อมูลหมายเลขห้องซ้ำกันในระบบ"));
     }
 
     const room = await prisma.room.update({
@@ -700,6 +759,7 @@ exports.updateClass = async (req, res, next) => {
     const { id } = req.params;
     const value = await createClassrooms.validateAsync(req.body);
 
+    
     const checkClassID = await prisma.class.findFirst({
       where: {
         class_id: Number(id),
@@ -999,6 +1059,24 @@ exports.getBanner = async (req, res, next) => {
   }
 };
 
+exports.getBannerByID = async (req, res, next) => {
+  try {
+    const { bannerID } = req.params;
+    const dateTime = new Date();
+
+    const banner = await prisma.banner.findFirst({
+      where: {
+        b_id: Number(bannerID)
+      }
+    })
+
+    res.json({ banner, resault: "success!", dateTime });
+  }catch(err){
+    next(err)
+    console.log(err)
+  }
+}
+
 exports.updateBanner = async (req, res, next) => {
   try {
     const { bannerId } = req.params;
@@ -1064,9 +1142,17 @@ exports.updateStatusBanner = async (req, res, next) => {
 exports.createBanner = async (req, res, next) => {
   try {
     const value = await createBanners.validateAsync(req.body);
+
+    const imagePromise = req.files.map((file) => {
+      return cloudUpload(file.path);
+    });
+
+    const imageUrlArray = await Promise.all(imagePromise);
+
     const banner = await prisma.banner.create({
       data: {
         ...value,
+        b_url: imageUrlArray[0]
       },
     });
     res.json({ message: "Create banner success!", banner });

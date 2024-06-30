@@ -57,14 +57,14 @@ exports.createSchedules = joi.object({
 
 exports.createClassrooms = joi.object({
     class_name: joi.string().required(),
-    sec_id: joi.number().required().strip(),
+    sec_id: joi.number().required(),
 })
 
 exports.createBanners = joi.object({
     b_url: joi.string().empty('').default("https://res.cloudinary.com/donutll40/image/upload/v1718281887/banner-02_b0lrpu.png"),
     b_header: joi.string().required(),
     b_title: joi.string().required(),
-    b_status: joi.number().default(0),
-    b_create_at: joi.string(),
+    b_status: joi.number().empty('').default(0),
+    b_create_at: joi.string().empty('').default(new Date().toISOString()),
     b_enddate: joi.string().required(),
 })

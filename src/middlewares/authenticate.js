@@ -42,6 +42,7 @@ const authenticate = async ( req, res, next ) => {
             } else {
               // ข้อผิดพลาดอื่นๆ
               console.log('Token verification failed:', err.message);
+              return createError(400, 'Token verification failed : ' + err.message);
             }
           }
 
