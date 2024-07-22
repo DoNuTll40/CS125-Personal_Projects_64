@@ -11,7 +11,7 @@ router.get("/users", adminControllers.getUsers);
 router.get("/all/users*", adminControllers.allGetUsers)
 router.get("/users/:userId", adminControllers.getUsersById);
 router.get("/major", adminControllers.getMajor);
-router.get("/sections", adminControllers.getSections);
+router.get("/major/:id", adminControllers.getMajorById);
 router.get("/builds", adminControllers.getBuilds);
 router.get("/builds/:id", adminControllers.getBuildById);
 router.get("/rooms", adminControllers.getRoom);
@@ -19,6 +19,7 @@ router.get("/rooms/:id", adminControllers.getRoomById);
 router.get("/class", adminControllers.getClass);
 router.get("/class/:id", adminControllers.getClassByID);
 router.get("/schedule/:id", adminControllers.getSchedule);
+router.get("/select/schedule*", adminControllers.getScheduleSearch)
 router.get("/teacher/schedule", adminControllers.teacherSchedule);
 router.get("/banner", adminControllers.getBanner);
 router.get("/banner/:bannerID", adminControllers.getBannerByID);
@@ -27,7 +28,6 @@ router.get("/banner/:bannerID", adminControllers.getBannerByID);
 router.post("/subject", adminControllers.createSubject);
 router.post("/users", upload.array("image", 1), adminControllers.createUser);
 router.post("/major", adminControllers.createMajor);
-router.post("/sections", adminControllers.createSections);
 router.post("/builds", upload.array("imageBuild", 1), adminControllers.createBuild);
 router.post("/rooms", adminControllers.createRoom);
 router.post("/schedule", adminControllers.createSchedule);
@@ -41,12 +41,12 @@ router.patch('/profile', upload.array("profileImage", 1), adminControllers.updat
 router.patch('/profile/:userId', upload.array("profileImage", 1), adminControllers.updateProfileById)
 router.patch('/major/:majorId', adminControllers.updateMajors)
 router.patch('/subject/:subjectId', adminControllers.updateSubject)
-router.patch("/schedule/:id", adminControllers.updateSchedule);
 router.patch('/rooms/:roomId', adminControllers.updateRoom)
 router.patch('/class/:id', adminControllers.updateClass)
 router.patch('/builds/:buildId', upload.array("imageBuild", 1), adminControllers.updateBuild);
 router.patch("/banner/:bannerId", upload.array("imageBanner", 1), adminControllers.updateBanner);
 router.patch("/banner/status/:bannerId", adminControllers.updateStatusBanner);
+// router.patch("/schedule/:id", adminControllers.updateSchedule);
 
 // Path Delete
 router.delete("/subject/:subjectId", adminControllers.deleteSubjects)

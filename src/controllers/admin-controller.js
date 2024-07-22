@@ -30,16 +30,20 @@ exports.getSubjectById = async (req, res, next) => {
 
     const sub = await prisma.subject.findFirst({
       where: {
-        sub_id: Number(subId)
-      }
-    })
+        sub_id: Number(subId),
+      },
+    });
 
-    res.json({ result: "success!", sub, datetime: new Date().toLocaleDateString('th-TH') });
-  }catch(err){
-    next(err)
-    console.log(err)
+    res.json({
+      result: "success!",
+      sub,
+      datetime: new Date().toLocaleDateString("th-TH"),
+    });
+  } catch (err) {
+    next(err);
+    console.log(err);
   }
-}
+};
 
 exports.createSubject = async (req, res, next) => {
   try {
@@ -119,10 +123,9 @@ exports.allGetUsers = async (req, res, next) => {
     const role = req.query.role || "";
     const classRoom = req.query.class || "";
     const page = parseInt(req.query.page) || 1; // หน้าที่ต้องการดึง (ค่าเริ่มต้นเป็น 1)
-    const skip = (page - 1) * limit; // คำนวณตำแหน่งเริ่มต้นในการดึงข้อมูล
+    const skip = (page - 1) * limit;
 
-    console.log(role);
-    const search = decodeURIComponent(searchTerm)
+    const search = decodeURIComponent(searchTerm);
 
     const totalUsers = await prisma.users.count({
       where: {
@@ -137,29 +140,29 @@ exports.allGetUsers = async (req, res, next) => {
               {
                 user_lastname: {
                   contains: search,
-                }
+                },
               },
               {
                 user_nickname: {
-                  contains: search
-                }
+                  contains: search,
+                },
               },
               {
                 user_identity: {
-                  contains: search
-                }
+                  contains: search,
+                },
               },
               {
                 user_phone: {
-                  contains: search.replace(/-/g, '')
-                }
+                  contains: search.replace(/-/g, ""),
+                },
               },
               {
                 user_email: {
-                  contains: search
-                }
-              }
-            ]
+                  contains: search,
+                },
+              },
+            ],
           },
           role !== "" ? { user_role: role } : {},
           {
@@ -167,7 +170,9 @@ exports.allGetUsers = async (req, res, next) => {
               user_role: "ADMIN",
             },
           },
-          classRoom !== "" ? { class: { class_name: { contains: classRoom } } } : {}
+          classRoom !== ""
+            ? { class: { class_name: { contains: classRoom } } }
+            : {},
         ],
       },
     });
@@ -215,7 +220,7 @@ exports.allGetUsers = async (req, res, next) => {
               user_role: "ADMIN",
             },
           },
-          classRoom !== "" ? { class: { class_name: classRoom } } : {}
+          classRoom !== "" ? { class: { class_name: classRoom } } : {},
         ],
       },
       include: {
@@ -225,12 +230,16 @@ exports.allGetUsers = async (req, res, next) => {
       skip: skip, // ข้ามข้อมูลตามจำนวนที่คำนวณได้
     });
 
-    if(get_user.length === 0){
-      return createError(400, "ไม่พบข้อมูลผู้ใช้ในระบบ")
+    if (get_user.length === 0) {
+      return createError(400, "ไม่พบข้อมูลผู้ใช้ในระบบ");
     }
 
-    const countMen = get_user.filter((user) => ["เด็กชาย", "นาย"].includes(user.user_nameprefix)).length;
-    const countWoman = get_user.filter((user) => ["เด็กหญิง", "นางสาว", "นาง"].includes(user.user_nameprefix)).length;
+    const countMen = get_user.filter((user) =>
+      ["เด็กชาย", "นาย"].includes(user.user_nameprefix)
+    ).length;
+    const countWoman = get_user.filter((user) =>
+      ["เด็กหญิง", "นางสาว", "นาง"].includes(user.user_nameprefix)
+    ).length;
 
     const totalPages = Math.ceil(totalUsers / limit);
 
@@ -337,30 +346,33 @@ exports.editUserById = async (req, res, next) => {
 exports.changPassword = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    console.log(userId)
-    const { password, newPassword,  retypeNewPass } = req.body;
+    console.log(userId);
+    const { password, newPassword, retypeNewPass } = req.body;
 
-    if(!password || !newPassword || !retypeNewPass){
+    if (!password || !newPassword || !retypeNewPass) {
       return createError(400, "กรุณากรอกข้อมูลให้ครบ");
     }
 
     const checkUser = await prisma.users.findFirst({
       where: {
-        user_id: Number(userId)
-      }
-    })
+        user_id: Number(userId),
+      },
+    });
 
-    if(!checkUser){
+    if (!checkUser) {
       return createError(400, "ไม่พบผู้ใช้งาน");
     }
 
-    const checkPassword = await bcrypt.compare(password, checkUser.user_password);
+    const checkPassword = await bcrypt.compare(
+      password,
+      checkUser.user_password
+    );
 
-    if(!checkPassword){
-     return createError(400, "รหัสผ่านเดิมไม่ถูกต้อง โปรดเช็คอีกครั้ง");
+    if (!checkPassword) {
+      return createError(400, "รหัสผ่านเดิมไม่ถูกต้อง โปรดเช็คอีกครั้ง");
     }
 
-    if(newPassword !== retypeNewPass){
+    if (newPassword !== retypeNewPass) {
       return createError(400, "รหัสผ่านไม่ตรงกัน");
     }
 
@@ -368,26 +380,48 @@ exports.changPassword = async (req, res, next) => {
 
     const changePassword = await prisma.users.update({
       where: {
-        user_id: Number(userId)
+        user_id: Number(userId),
       },
       data: {
-        user_password: hashPassword
-      }
+        user_password: hashPassword,
+      },
     });
 
-    res.json({ result: "success", user: changePassword, updateAt: new Date().toLocaleDateString('th-TH') })
-  }catch(err){
-    next(err)
+    res.json({
+      result: "success",
+      user: changePassword,
+      updateAt: new Date().toLocaleDateString("th-TH"),
+    });
+  } catch (err) {
+    next(err);
   }
-}
+};
 
 exports.getMajor = async (req, res, next) => {
   const major = await prisma.major.findMany();
   res.json({ major, message: "Get Major" });
 };
 
+exports.getMajorById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const major = await prisma.major.findFirst({
+      where: {
+        major_id: Number(id),
+      },
+    });
+
+    res.json({ major });
+  } catch (err) {
+    next(err);
+    console.log(err);
+  }
+};
+
 exports.createMajor = async (req, res, next) => {
   try {
+    console.log(req.body);
+    console.log(req);
     const value = await createMajors.validateAsync(req.body);
 
     if (value.major_name === "") {
@@ -477,14 +511,6 @@ exports.deleteMajor = async (req, res, next) => {
   }
 };
 
-exports.getSections = (req, res, next) => {
-  res.json({ message: "Get Sections" });
-};
-
-exports.createSections = (req, res, next) => {
-  res.json({ message: "Create Sections" });
-};
-
 exports.getBuilds = async (req, res, next) => {
   const builds = await prisma.builds.findMany();
   res.json({ builds });
@@ -495,12 +521,12 @@ exports.getBuildById = async (req, res, next) => {
   try {
     const build = await prisma.builds.findFirst({
       where: {
-        build_id: Number(id)
-      }
-    })
+        build_id: Number(id),
+      },
+    });
     res.json({ build });
-  }catch(err){
-    console.log(err)
+  } catch (err) {
+    console.log(err);
   }
 };
 
@@ -596,16 +622,20 @@ exports.getRoomById = async (req, res, next) => {
     const { id } = req.params;
     const room = await prisma.room.findFirst({
       where: {
-        room_id: Number(id)
-      }
-    })
+        room_id: Number(id),
+      },
+    });
 
-    res.json({ result: "success!", room, datetime: new Date().toLocaleDateString('th-TH') })
-  }catch(err){
-    next(err)
-    console.log(err)
+    res.json({
+      result: "success!",
+      room,
+      datetime: new Date().toLocaleDateString("th-TH"),
+    });
+  } catch (err) {
+    next(err);
+    console.log(err);
   }
-}
+};
 
 exports.createRoom = async (req, res, next) => {
   try {
@@ -648,8 +678,8 @@ exports.updateRoom = async (req, res, next) => {
     const checkRoomNumber = await prisma.room.findFirst({
       where: {
         room_number: value.room_number,
-        NOT: { room_id: Number(roomId) }
-      }
+        NOT: { room_id: Number(roomId) },
+      },
     });
 
     if (checkRoomNumber) {
@@ -759,7 +789,6 @@ exports.updateClass = async (req, res, next) => {
     const { id } = req.params;
     const value = await createClassrooms.validateAsync(req.body);
 
-    
     const checkClassID = await prisma.class.findFirst({
       where: {
         class_id: Number(id),
@@ -896,6 +925,53 @@ exports.getSchedule = async (req, res, next) => {
   }
 };
 
+exports.getScheduleSearch = async (req, res, next) => {
+  try {
+    const class_id = req.query.classID || "";
+    const sched_day = req.query.day || "";
+
+    const day = decodeURIComponent(sched_day)
+
+    const schedule = await prisma.schedule.findMany({
+      where: {
+        AND: [
+          class_id && {
+            class: {
+              class_id: Number(class_id),
+            },
+          },
+          sched_day && {
+            sched_day: {
+              contains: day,
+            },
+          },
+        ].filter(Boolean),
+      },
+      include: {
+        subject: {
+          include: {
+            room: {
+              include: {
+                build: true,
+              }
+            }
+          }
+        },
+        user: true, 
+        class: true,
+      },
+      orderBy: {
+        sched_time: 'asc'
+      }
+    });
+
+    res.json({ schedule });
+  } catch (err) {
+    next(err);
+    console.log(err);
+  }
+};
+
 exports.createSchedule = async (req, res, next) => {
   try {
     const value = await createSchedules.validateAsync(req.body);
@@ -908,18 +984,30 @@ exports.createSchedule = async (req, res, next) => {
           { sched_time: value.sched_time },
         ],
       },
+      include: {
+        class: true,
+        user: true,
+        subject: {
+          include: {
+            room: {
+              include: {
+                build: true,
+              },
+            },
+          },
+        },
+      },
     });
+    console.log(checkSched);
 
     if (checkSched.length > 0) {
-      const output = checkSched.map((el) => ({
-        sched_day: el.sched_day,
-        sched_time: el.sched_time,
-      }));
+      const output = checkSched.map(
+        (el) =>
+          `วัน: ${el.sched_day}, เวลา: ${el.sched_time}, ชื่อวิชา: ${el.subject?.sub_name}, คุณครู: ${el.user?.user_firstname} ${el.user?.user_lastname}`
+      );
       createError(
         400,
-        `ระบบไม่สามารถเพิ่มข้อมูลได้เนื่องจากมีรายการที่ซ้ำกันกับข้อมูลก่อนหน้านี้ ${JSON.stringify(
-          output
-        )}`
+        `ระบบไม่สามารถเพิ่มข้อมูลได้เนื่องจากมีรายการที่ซ้ำกันกับข้อมูลก่อนหน้านี้ ${output[0]}`
       );
     }
 
@@ -928,6 +1016,7 @@ exports.createSchedule = async (req, res, next) => {
         ...value,
       },
     });
+
     res.json({ createSchedule });
   } catch (err) {
     next(err);
@@ -1066,16 +1155,16 @@ exports.getBannerByID = async (req, res, next) => {
 
     const banner = await prisma.banner.findFirst({
       where: {
-        b_id: Number(bannerID)
-      }
-    })
+        b_id: Number(bannerID),
+      },
+    });
 
     res.json({ banner, resault: "success!", dateTime });
-  }catch(err){
-    next(err)
-    console.log(err)
+  } catch (err) {
+    next(err);
+    console.log(err);
   }
-}
+};
 
 exports.updateBanner = async (req, res, next) => {
   try {
@@ -1123,6 +1212,17 @@ exports.updateStatusBanner = async (req, res, next) => {
   try {
     const { b_status } = req.body;
     const { bannerId } = req.params;
+
+    const chechId = await prisma.banner.findFirst({
+      where: {
+        b_id: Number(bannerId),
+      },
+    });
+
+    if (!chechId) {
+      return next(createError(400, "ไม่พบไอดีของแบนเนอร์แล้ว"));
+    }
+
     const banner = await prisma.banner.update({
       where: {
         b_id: Number(bannerId),
@@ -1152,7 +1252,7 @@ exports.createBanner = async (req, res, next) => {
     const banner = await prisma.banner.create({
       data: {
         ...value,
-        b_url: imageUrlArray[0]
+        b_url: imageUrlArray[0],
       },
     });
     res.json({ message: "Create banner success!", banner });
