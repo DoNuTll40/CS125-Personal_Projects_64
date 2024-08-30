@@ -490,8 +490,8 @@ const scheduleAdd = async () => {
 sectionAdd();
 classAdd();
 buildAdd();
-roomAdd();
-subjectAdd();
+// roomAdd();
+// subjectAdd();
 majorAdd();
 userAdd();
-scheduleAdd();
+// scheduleAdd();

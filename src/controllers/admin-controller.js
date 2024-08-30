@@ -49,6 +49,23 @@ exports.createSubject = async (req, res, next) => {
   try {
     const value = await createSubjects.validateAsync(req.body);
     const { major_id, room_id } = req.body;
+
+    const checkSubName = await prisma.subject.findFirst({
+      where: { sub_name: value.sub_name },
+    });
+
+    const checkSubNumber = await prisma.subject.findFirst({
+      where: { sub_code: value.sub_code },
+    });
+
+    if (checkSubName) {
+      return createError(400, "พบชื่อวิชาที่ซ้ำกันในระบบ");
+    }
+
+    if (checkSubNumber) {
+      return createError(400, "พบรหัสวิชาที่ซ้ำกันในระบบ");
+    }
+
     const cSub = await prisma.subject.create({
       data: {
         ...value,
@@ -59,6 +76,7 @@ exports.createSubject = async (req, res, next) => {
     res.json({ cSub, message: "create sub" });
   } catch (err) {
     next(err);
+    console.log(err);
   }
 };
 
@@ -75,6 +93,32 @@ exports.updateSubject = async (req, res, next) => {
 
     if (!checkSubject) {
       return createError(400, "ไม่พบข้อมูล ID ของรายวิชา");
+    }
+
+    const checkSubName = await prisma.subject.findFirst({
+      where: {
+        sub_name: value.sub_name,
+        NOT: {
+          sub_id: Number(subjectId),
+        },
+      },
+    });
+
+    const checkSubNumber = await prisma.subject.findFirst({
+      where: {
+        sub_code: value.sub_code,
+        NOT: {
+          sub_id: Number(subjectId),
+        },
+      },
+    });
+
+    if (checkSubName) {
+      return createError(400, "พบชื่อวิชาที่ซ้ำกันในระบบ");
+    }
+
+    if (checkSubNumber) {
+      return createError(400, "พบรหัสวิชาที่ซ้ำกันในระบบ");
     }
 
     const sub = await prisma.subject.update({
@@ -104,6 +148,7 @@ exports.deleteSubjects = async (req, res, next) => {
     res.json({ deleteSub });
   } catch (err) {
     next(err);
+    console.log(err);
   }
 };
 
@@ -170,9 +215,7 @@ exports.allGetUsers = async (req, res, next) => {
               user_role: "ADMIN",
             },
           },
-          classRoom !== ""
-            ? { class: { class_name: { contains: classRoom } } }
-            : {},
+          classRoom !== "" ? { class_id: Number(classRoom) } : {},
         ],
       },
     });
@@ -220,7 +263,7 @@ exports.allGetUsers = async (req, res, next) => {
               user_role: "ADMIN",
             },
           },
-          classRoom !== "" ? { class: { class_name: classRoom } } : {},
+          classRoom !== "" ? { class_id: Number(classRoom) } : {},
         ],
       },
       include: {
@@ -274,6 +317,7 @@ exports.getUsersById = async (req, res, next) => {
     res.json({ user });
   } catch (err) {
     next(err);
+    console.log(err);
   }
 };
 
@@ -282,6 +326,29 @@ exports.createUser = async (req, res, next) => {
     const value = await createUser.validateAsync(req.body);
 
     const { user_password, class_id } = req.body;
+
+    const checkIdentCreateUser = await prisma.users.findFirst({
+      where: { user_identity: value.user_identity },
+    });
+
+    const checkEmailCreateUser = await prisma.users.findFirst({
+      where: { user_email: value.user_email },
+    });
+
+    const checkUsernameCreateUser = await prisma.users.findFirst({
+      where: { user_username: value.user_username },
+    });
+
+    if (checkIdentCreateUser) {
+      return createError(400, "มีข้อมูลหมายเลขบัตรประชาชนนี้แล้ว");
+    }
+
+    if (checkEmailCreateUser) {
+      return createError(400, "มีผู้ใช้งาน email นี้แล้ว");
+    }
+    if (checkUsernameCreateUser) {
+      return createError(400, "มี username นี้อยู่ในระบบแล้ว, โปรดลองใหม่");
+    }
 
     const hash = await bcrypt.hash(user_password, 10);
 
@@ -304,10 +371,14 @@ exports.createUser = async (req, res, next) => {
       },
     });
 
+    req.files.forEach((file) => {
+      fs.unlinkSync(file.path);
+    });
+
     res.json({ userCreate, message: "Create uers success" });
   } catch (err) {
+    next(err);
     console.log(err);
-    return createError(400, "Can't create users");
   }
 };
 
@@ -394,6 +465,7 @@ exports.changPassword = async (req, res, next) => {
     });
   } catch (err) {
     next(err);
+    console.log(err);
   }
 };
 
@@ -434,7 +506,7 @@ exports.createMajor = async (req, res, next) => {
 
     const checkMajor = await prisma.major.findFirst({
       where: {
-        ...value,
+        major_name: value.major_name,
       },
     });
 
@@ -477,6 +549,19 @@ exports.updateMajors = async (req, res, next) => {
 
     if (typeof value.major_name !== "string") {
       return createError(400, "ข้อมูลไม่ใช่รูปแบบข้อความ");
+    }
+
+    const checkMajorName = await prisma.major.findFirst({
+      where: {
+        major_name: value.major_name,
+        NOT: {
+          major_id: Number(majorId),
+        },
+      },
+    });
+
+    if (checkMajorName) {
+      return createError(400, "มีชื่อกลุ่มวิชานี้ในระบบแล้ว");
     }
 
     const major = await prisma.major.update({
@@ -546,6 +631,10 @@ exports.createBuild = async (req, res, next) => {
       },
     });
 
+    req.files.forEach((file) => {
+      fs.unlinkSync(file.path);
+    });
+
     res.json({ cBuild, message: "Create Builds" });
   } catch (err) {
     next();
@@ -584,6 +673,11 @@ exports.updateBuild = async (req, res, next) => {
           build_image: imageUrlArray[0],
         },
       });
+
+      req.files.forEach((file) => {
+        fs.unlinkSync(file.path);
+      });
+
       res.json({ message: "Update build success!", upBuild });
     }
   } catch (err) {
@@ -641,6 +735,23 @@ exports.createRoom = async (req, res, next) => {
   try {
     const value = await createRooms.validateAsync(req.body);
     const { build_id } = req.body;
+
+    const checkRoomName = await prisma.room.findFirst({
+      where: { room_name: value.room_name },
+    });
+
+    const checkRoomNumber = await prisma.room.findFirst({
+      where: { room_number: value.room_number },
+    });
+
+    if (checkRoomName) {
+      return createError(400, "มีชื่อห้องนี้แล้ว");
+    }
+
+    if (checkRoomNumber) {
+      return createError(400, "มีหมายเลขห้องนี้แล้ว");
+    }
+
     const room = await prisma.room.create({
       data: {
         ...value,
@@ -655,7 +766,6 @@ exports.createRoom = async (req, res, next) => {
   } catch (err) {
     next(err);
     console.log(err);
-    return createError(400, "Error create room");
   }
 };
 
@@ -719,7 +829,6 @@ exports.deleteRoom = async (req, res, next) => {
   } catch (err) {
     next(err);
     console.log(err);
-    createError(400, "Error delete room");
   }
 };
 
@@ -768,7 +877,7 @@ exports.createClass = async (req, res, next) => {
     } else {
       const createC = await prisma.class.create({
         data: {
-          ...value,
+          class_name: value.class_name,
           section: {
             connect: {
               sec_id: +sec_id,
@@ -799,12 +908,25 @@ exports.updateClass = async (req, res, next) => {
       return createError(400, `ระบบไม่พบหมายเลข ${Number(id)} ในฐานข้อมูล`);
     }
 
+    const checkClassName = await prisma.class.findFirst({
+      where: {
+        class_name: value.class_name,
+        NOT: {
+          class_id: Number(id),
+        },
+      },
+    });
+
+    if (checkClassName) {
+      return createError(400, "ระบบตรวจพบชื่อห้องที่ซ้ำกัน");
+    }
+
     const upClass = await prisma.class.update({
       where: {
         class_id: Number(id),
       },
       data: {
-        ...value,
+        class_name: value.class_name,
       },
     });
 
@@ -840,8 +962,8 @@ exports.deleteUsers = async (req, res, next) => {
     });
     res.json({ resault: dUsers });
   } catch (err) {
+    next(err);
     console.log(err);
-    return createError(400, "Delete not found");
   }
 };
 
@@ -867,6 +989,7 @@ exports.updateProfile = async (req, res, next) => {
     res.json({ updateProfile });
   } catch (err) {
     next(err);
+    console.log(err);
   }
 };
 
@@ -893,6 +1016,7 @@ exports.updateProfileById = async (req, res, next) => {
     res.json({ updateProfile });
   } catch (err) {
     next(err);
+    console.log(err);
   }
 };
 
@@ -921,7 +1045,7 @@ exports.getSchedule = async (req, res, next) => {
     res.json({ schedule });
   } catch (err) {
     next(err);
-    createError(400, "Error Get Schedule");
+    console.log(err);
   }
 };
 
@@ -930,7 +1054,7 @@ exports.getScheduleSearch = async (req, res, next) => {
     const class_id = req.query.classID || "";
     const sched_day = req.query.day || "";
 
-    const day = decodeURIComponent(sched_day)
+    const day = decodeURIComponent(sched_day);
 
     const schedule = await prisma.schedule.findMany({
       where: {
@@ -953,16 +1077,16 @@ exports.getScheduleSearch = async (req, res, next) => {
             room: {
               include: {
                 build: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
-        user: true, 
+        user: true,
         class: true,
       },
       orderBy: {
-        sched_time: 'asc'
-      }
+        sched_time: "asc",
+      },
     });
 
     res.json({ schedule });
@@ -998,7 +1122,6 @@ exports.createSchedule = async (req, res, next) => {
         },
       },
     });
-    console.log(checkSched);
 
     if (checkSched.length > 0) {
       const output = checkSched.map(
@@ -1008,6 +1131,158 @@ exports.createSchedule = async (req, res, next) => {
       createError(
         400,
         `ระบบไม่สามารถเพิ่มข้อมูลได้เนื่องจากมีรายการที่ซ้ำกันกับข้อมูลก่อนหน้านี้ ${output[0]}`
+      );
+    }
+
+    const checkTeacher = await prisma.schedule.findMany({
+      where: {
+        AND: [
+          { user_id: value.user_id },
+          { user: { user_role: "TEACHER" } },
+          { sched_day: value.sched_day },
+          { sched_time: value.sched_time },
+        ],
+      },
+      include: {
+        class: true,
+        user: true,
+        subject: {
+          include: {
+            room: {
+              include: {
+                build: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (checkTeacher.length > 0) {
+      const output = checkTeacher.map(
+        (el) =>
+          `วัน: ${el.sched_day}, เวลา: ${el.sched_time}, ชื่อวิชา: ${el.subject?.sub_name}, คุณครู: ${el.user?.user_firstname} ${el.user?.user_lastname}, สอนที่ห้อง: ${el.class.class_name}`
+      );
+      createError(
+        400,
+        `ระบบไม่สามารถเพิ่มข้อมูลได้เนื่องจากการสอนใน ${output.join(", ")}`
+      );
+    }
+
+    function addOneHourToTimeRange(timeRange) {
+      // แยกช่วงเวลาโดยใช้ "-"
+      const [startTime, endTime] = timeRange.split("-");
+
+      // แปลงเวลาเริ่มต้นและเวลาสิ้นสุดเป็น Date objects
+      const startDate = new Date(`1970-01-01T${startTime}:00`);
+      const endDate = new Date(`1970-01-01T${endTime}:00`);
+
+      // บวก 1 ชั่วโมงให้กับเวลาเริ่มต้นและเวลาสิ้นสุด
+      startDate.setHours(startDate.getHours() + 1);
+      endDate.setHours(endDate.getHours() + 1);
+
+      // แปลงกลับเป็นเวลาที่จัดรูปแบบใหม่
+      const newStartTime = startDate.toTimeString().slice(0, 5);
+      const newEndTime = endDate.toTimeString().slice(0, 5);
+
+      // รวมเวลาเริ่มต้นและเวลาสิ้นสุดกลับเป็นช่วงเวลา
+      return `${newStartTime}-${newEndTime}`;
+    }
+
+    if (value.sched_count === 2) {
+      const schedTime = addOneHourToTimeRange(value.sched_time);
+
+      const TeacherCheckTime = await prisma.schedule.findMany({
+        where: {
+          AND: [
+            { sched_day: value.sched_day },
+            { user_id: value.user_id },
+            { user: { user_role: "TEACHER" } },
+            { sched_time: schedTime },
+          ],
+        },
+        include: {
+          class: true,
+          user: true,
+          subject: {
+            include: {
+              room: {
+                include: {
+                  build: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (TeacherCheckTime.length > 0) {
+        const output = TeacherCheckTime.map(
+          (el) =>
+            `วัน: ${el.sched_day}, เวลา: ${el.sched_time}, ชื่อวิชา: ${el.subject?.sub_name}, คุณครู: ${el.user?.user_firstname} ${el.user?.user_lastname}, สอนที่ห้อง: ${el.class.class_name}`
+        );
+        createError(
+          400,
+          `ระบบไม่สามารถเพิ่มข้อมูลเป็น 2 คาบได้เนื่องจากมีการสอนในคาบถัดไป ${output[0]}`
+        );
+      }
+    }
+
+    function DownOneHourToTimeRange(timeRange) {
+      // แยกช่วงเวลาโดยใช้ "-"
+      const [startTime, endTime] = timeRange.split("-");
+
+      // แปลงเวลาเริ่มต้นและเวลาสิ้นสุดเป็น Date objects
+      const startDate = new Date(`1970-01-01T${startTime}:00`);
+      const endDate = new Date(`1970-01-01T${endTime}:00`);
+
+      // บวก 1 ชั่วโมงให้กับเวลาเริ่มต้นและเวลาสิ้นสุด
+      startDate.setHours(startDate.getHours() - 1);
+      endDate.setHours(endDate.getHours() - 1);
+
+      // แปลงกลับเป็นเวลาที่จัดรูปแบบใหม่
+      const newStartTime = startDate.toTimeString().slice(0, 5);
+      const newEndTime = endDate.toTimeString().slice(0, 5);
+
+      // รวมเวลาเริ่มต้นและเวลาสิ้นสุดกลับเป็นช่วงเวลา
+      return `${newStartTime}-${newEndTime}`;
+    }
+
+    const schedTime = DownOneHourToTimeRange(value.sched_time)
+
+    const teacherChackTime = await prisma.schedule.findMany({
+      where: {
+        AND: [
+          { user_id: value.user_id },
+          { user: { user_role: 'TEACHER' } },
+          { sched_day: value.sched_day },
+          { sched_time: schedTime },
+          { sched_count: 2 },
+        ]
+      },
+      include: {
+        class: true,
+        user: true,
+        subject: {
+          include: {
+            room: {
+              include: {
+                build: true,
+              },
+            },
+          },
+        },
+      },
+    })
+
+    if(teacherChackTime.length > 0){
+      const output = teacherChackTime.map(
+        (el) =>
+          `วัน: ${el.sched_day}, เวลา: ${el.sched_time}, ชื่อวิชา: ${el.subject?.sub_name}, คุณครู: ${el.user?.user_firstname} ${el.user?.user_lastname}, สอนที่ห้อง: ${el.class.class_name}`
+      );
+      createError(
+        400,
+        `ระบบไม่สามารถเพิ่มข้อมูลได้เนื่องจากคุณครูมีการเรียนการสอน ${output[0]}`
       );
     }
 
@@ -1095,6 +1370,8 @@ exports.deleteSchedule = async (req, res, next) => {
 
 exports.teacherSchedule = async (req, res, next) => {
   try {
+    const userId = req.query.userId;
+
     const getSchedule = await prisma.schedule.findMany({
       include: {
         user: true,
@@ -1115,7 +1392,7 @@ exports.teacherSchedule = async (req, res, next) => {
         },
       },
       where: {
-        user_id: Number(req.user.user_id),
+        user_id: userId ? Number(userId) : Number(req.user.user_id),
       },
       orderBy: [
         {
@@ -1127,7 +1404,6 @@ exports.teacherSchedule = async (req, res, next) => {
   } catch (err) {
     next(err);
     console.log(err);
-    createError(400, "Error teacher schedule");
   }
 };
 
@@ -1200,6 +1476,10 @@ exports.updateBanner = async (req, res, next) => {
         },
       });
 
+      req.files.forEach((file) => {
+        fs.unlinkSync(file.path);
+      });
+
       res.json({ banner, resault: "success!", dateTime });
     }
   } catch (err) {
@@ -1255,6 +1535,11 @@ exports.createBanner = async (req, res, next) => {
         b_url: imageUrlArray[0],
       },
     });
+
+    req.files.forEach((file) => {
+      fs.unlinkSync(file.path);
+    });
+
     res.json({ message: "Create banner success!", banner });
   } catch (err) {
     next(err);

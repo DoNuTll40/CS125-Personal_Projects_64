@@ -20,7 +20,7 @@ router.get("/class", adminControllers.getClass);
 router.get("/class/:id", adminControllers.getClassByID);
 router.get("/schedule/:id", adminControllers.getSchedule);
 router.get("/select/schedule*", adminControllers.getScheduleSearch)
-router.get("/teacher/schedule", adminControllers.teacherSchedule);
+router.get("/teacher/schedule*", adminControllers.teacherSchedule);
 router.get("/banner", adminControllers.getBanner);
 router.get("/banner/:bannerID", adminControllers.getBannerByID);
 
