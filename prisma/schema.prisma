@@ -1,8 +1,9 @@
-// This is your Prisma schema file for PostgreSQL.
+// This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
+  // output   = "./generated/client"
 }
 
 datasource db {
@@ -28,39 +29,39 @@ model Users {
   user_username   String
   user_password   String
   user_role       Role       @default(USER)
-  user_nameprefix String?     @db.VarChar(100)
+  user_nameprefix String     @db.VarChar(50)
   user_firstname  String
   user_lastname   String
-  user_nickname   String?
-  user_email      String?    @db.VarChar(100)
-  user_phone      String?    @db.VarChar(100)
-  user_address    String?    @db.VarChar(255)
+  user_nickname   String
+  user_email      String
+  user_phone      String
+  user_address    String
   user_brithday   DateTime   @db.Date
   user_identity   String     @unique @db.VarChar(17)
   user_image      String     @default("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQJxKGGpPc9-5g25KWwnsCCy9O_dlS4HWo5A&usqp=CAU")
   class           Class      @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: Cascade)
   class_id        Int
-  table           Schedule[]
+  table           schedule[]
 
   @@map("users")
 }
 
 model Subject {
   sub_id   Int        @id @default(autoincrement())
-  sub_name String     @db.VarChar(255)
-  sub_code String     @db.VarChar(100)
+  sub_name String
+  sub_code String
   room     Room       @relation(fields: [room_id], references: [room_id], onDelete: Cascade, onUpdate: Cascade)
   room_id  Int
   major    Major      @relation(fields: [major_id], references: [major_id], onDelete: Cascade, onUpdate: Cascade)
   major_id Int
-  table    Schedule[]
+  table    schedule[]
 
   @@map("subject")
 }
 
 model Major {
   major_id   Int       @id @default(autoincrement())
-  major_name String     @db.VarChar(255)
+  major_name String
   Subject    Subject[]
 
   @@map("major")
@@ -68,8 +69,8 @@ model Major {
 
 model Room {
   room_id     Int       @id @default(autoincrement())
-  room_name   String     @db.VarChar(255)
-  room_number String     @db.VarChar(100)
+  room_name   String
+  room_number String
   build       Builds    @relation(fields: [build_id], references: [build_id], onDelete: Cascade, onUpdate: Cascade)
   build_id    Int
   Subject     Subject[]
@@ -79,8 +80,8 @@ model Room {
 
 model Builds {
   build_id     Int     @id @default(autoincrement())
-  build_name   String   @db.VarChar(255)
-  build_number String   @db.VarChar(100)
+  build_name   String
+  build_number String
   build_image  String?
   room         Room[]
 
@@ -97,34 +98,34 @@ model Section {
 
 model Class {
   class_id   Int        @id @default(autoincrement())
-  class_name String      @db.VarChar(255)
-  section    Section     @relation(fields: [sec_id], references: [sec_id], onDelete: Cascade, onUpdate: Cascade)
+  class_name String
+  section    Section    @relation(fields: [sec_id], references: [sec_id], onDelete: Cascade, onUpdate: Cascade)
   sec_id     Int
   Users      Users[]
-  table      Schedule[]
+  table      schedule[]
 
   @@map("class")
 }
 
-model Schedule {
+model schedule {
   sched_id    Int     @id @default(autoincrement())
-  sched_day   String   @db.VarChar(100)
-  sched_time  String   @db.VarChar(100)
+  sched_day   String
+  sched_time  String
   sched_count Int     @default(1)
-  class       Class    @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: Cascade)
+  class       Class   @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: Cascade)
   class_id    Int
-  subject     Subject  @relation(fields: [sub_id], references: [sub_id], onDelete: Cascade, onUpdate: Cascade)
+  subject     Subject @relation(fields: [sub_id], references: [sub_id], onDelete: Cascade, onUpdate: Cascade)
   sub_id      Int
-  user        Users    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: Cascade)
+  user        Users   @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: Cascade)
   user_id     Int
 }
 
-model Banner {
-  b_id        Int      @id @default(autoincrement())
-  b_url       String
-  b_header    String
-  b_title     String
-  b_status    Int      @default(0)
-  b_create_at DateTime @default(now())
-  b_enddate   DateTime
+model banner {
+  b_id Int @id @default(autoincrement())
+  b_url String
+  b_header String
+  b_title String
+  b_status Int @default(0)
+  b_create_at DateTime @db.Timestamp()
+  b_enddate DateTime @db.DateTime()
 }
