@@ -11,9 +11,6 @@
     "swagger-autogen": "node ./src/configs/swagger.js",
     "postinstall": "npx prisma generate"
   },
-  "prisma": {
-    "seed": "node prisma/seed.js"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
