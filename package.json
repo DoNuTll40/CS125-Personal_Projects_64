@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "setup": "npm install && npm install @prisma/client && npx prisma generate && echo \nnpm run setup",
     "start": "nodemon index.js",

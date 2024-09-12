@@ -20,9 +20,9 @@ const prisma = require('./src/configs/prisma');
 
 web.use(cors())
 web.use(express.json());
-web.use("/", (res) => {
-  res.json("Hello Welcome to myApi Personal Project")
-})
+web.get("/", (req, res) => {
+  res.json("Hello Welcome to myApi Personal Project");
+});
 web.use("/user", authenticate, user, userRoute);
 web.use("/admin", authenticate, admin, adminRoute);
 web.use("/auth", authRoute);
