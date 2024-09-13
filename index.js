@@ -5,6 +5,7 @@ const web = express();
 const port = process.env.PORT;
 
 const cors = require('cors')
+const compression = require('compression');
 
 const userRoute = require("./src/routes/user-route")
 const adminRoute = require("./src/routes/admin-route")
@@ -20,6 +21,7 @@ const prisma = require('./src/configs/prisma');
 
 web.use(cors())
 web.use(express.json());
+web.use(compression());
 web.get("/", (req, res) => {
   res.json("Hello Welcome to myApi Personal Project");
 });
