@@ -6,9 +6,7 @@ exports.saveVisitData = async (req, res, next) => {
 
         const visitData = req.body;
 
-        console.log(visitData);
-
-        const existingVisit = await prisma.visit.findUnique({
+        const existingVisit = await prisma.visit.findFirst({
             where: {
               ipAddress: visitData.ipAddress,
             },
@@ -30,6 +28,6 @@ exports.saveVisitData = async (req, res, next) => {
             });
         }
     }catch(err){
-        console.log("error visit_gps")
+        console.log(err)
     }
 };
