@@ -121,11 +121,34 @@ model schedule {
 }
 
 model banner {
-  b_id Int @id @default(autoincrement())
-  b_url String
-  b_header String
-  b_title String
-  b_status Int @default(0)
+  b_id        Int      @id @default(autoincrement())
+  b_url       String
+  b_header    String
+  b_title     String
+  b_status    Int      @default(0)
   b_create_at DateTime @db.Timestamp()
-  b_enddate DateTime @db.DateTime()
+  b_enddate   DateTime @db.DateTime()
+}
+
+model Visit {
+  id               Int      @id @default(autoincrement())
+  latitude         Float?
+  longitude        Float?
+  ipAddress        String   @default("IP not available")
+  userAgent        String
+  appName          String
+  appVersion       String
+  language         String
+  platform         String
+  vendor           String
+  screenWidth      Int
+  screenHeight     Int
+  screenColorDepth Int
+  sessionId        String
+  website          String
+  pageViewed       String
+  visitCount       Int      @default(1) // ฟิลด์ใหม่เพื่อเก็บจำนวนการเข้าชม
+  createdAt        DateTime @default(now()) // วันที่สร้าง
+  updatedAt        DateTime @updatedAt // วันที่อัปเดต
+  mapURL           String
 }
