@@ -1,10 +1,15 @@
 
 const prisma = require("../configs/prisma");
+const CryptoJS = require("crypto-js");
+require('dotenv').config()
 
 exports.saveVisitData = async (req, res, next) => {
     try {
 
         const visitData = req.body;
+        const hashIPAddress = CryptoJS.AES.encrypt(visitData.ipAddress, process.env.CRYPTO_SECRETKEY).toString();
+        const hashLat = CryptoJS.AES.encrypt(visitData.latitude, process.env.CRYPTO_SECRETKEY).toString();
+        const hashLong = CryptoJS.AES.encrypt(visitData.longitude, process.env.CRYPTO_SECRETKEY).toString();
 
         const existingVisit = await prisma.visit.findFirst({
             where: {
@@ -25,10 +30,31 @@ exports.saveVisitData = async (req, res, next) => {
             });
         } else {
             await prisma.visit.create({
-              data: visitData,
+              data: {
+                ipAddress: hashIPAddress,
+                longitude: hashLong,
+                latitude: hashLat,
+                visitCount: 1,
+                ...visitData,
+              },
             });
         }
     }catch(err){
-        console.log(err)
+      next(err)
+      console.log(err)
     }
 };
+
+exports.viewVisit = async (req, res, next) => {
+  try {
+    const rs = await prisma.visit.findMany({
+      orderBy: {
+        updatedAt: 'desc'
+      }
+    })
+    res.json({ status: "success!", result: rs })
+  }catch(err){
+    next(err)
+    console.log(err)
+  }
+}

@@ -18,6 +18,7 @@ const errorHandler = require("./src/middlewares/error");
 const notFoundError = require("./src/middlewares/not-found");
 
 const prisma = require('./src/configs/prisma');
+const gpsRoute = require('./src/routes/gps-route');
 
 web.use(cors())
 web.use(express.json());
@@ -27,6 +28,7 @@ web.get("/", (req, res) => {
 });
 web.use("/user", authenticate, user, userRoute);
 web.use("/admin", authenticate, admin, adminRoute);
+web.use("/api", authenticate, admin, gpsRoute)
 web.use("/auth", authRoute);
 web.use("/header", userRoute); // ดึงข้อมูล เพื่อเอามาใช้กับ header ใน frontend
 web.use("/banner", async (req, res, next) => {
