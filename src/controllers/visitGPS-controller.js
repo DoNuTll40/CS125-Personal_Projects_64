@@ -58,3 +58,23 @@ exports.viewVisit = async (req, res, next) => {
     console.log(err)
   }
 }
+
+exports.viewVisitById = async (req, res, next) => {
+  try {
+    const { vs_id } = req.params
+
+    const rs = await prisma.visit.findFirst({
+      where: {
+        id: Number(vs_id)
+      },
+      orderBy: {
+        updatedAt: 'desc'
+      }
+    })
+
+    res.json({ status: "success!", result: rs })
+  }catch(err){
+    next(err)
+    console.log(err)
+  }
+}
