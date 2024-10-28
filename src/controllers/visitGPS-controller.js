@@ -19,6 +19,7 @@ exports.saveVisitData = async (req, res, next) => {
                 id: existingVisit.id,
               },
               data: {
+                ...visitData,
                 visitCount: existingVisit.visitCount + 1,
               },
             });
