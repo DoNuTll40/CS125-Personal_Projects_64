@@ -7,9 +7,9 @@ exports.saveVisitData = async (req, res, next) => {
     try {
 
         const visitData = req.body;
-        const hashIPAddress = CryptoJS.AES.encrypt(visitData.ipAddress, process.env.CRYPTO_SECRETKEY).toString();
-        const hashLat = CryptoJS.AES.encrypt(visitData.latitude, process.env.CRYPTO_SECRETKEY).toString();
-        const hashLong = CryptoJS.AES.encrypt(visitData.longitude, process.env.CRYPTO_SECRETKEY).toString();
+        // const hashIPAddress = CryptoJS.AES.encrypt(visitData.ipAddress, process.env.CRYPTO_SECRETKEY).toString();
+        // const hashLat = CryptoJS.AES.encrypt(visitData.latitude, process.env.CRYPTO_SECRETKEY).toString();
+        // const hashLong = CryptoJS.AES.encrypt(visitData.longitude, process.env.CRYPTO_SECRETKEY).toString();
 
         const existingVisit = await prisma.visit.findFirst({
             where: {
@@ -31,10 +31,10 @@ exports.saveVisitData = async (req, res, next) => {
         } else {
             await prisma.visit.create({
               data: {
-                ipAddress: hashIPAddress,
-                longitude: hashLong,
-                latitude: hashLat,
-                visitCount: 1,
+                // ipAddress: hashIPAddress,
+                // longitude: hashLong,
+                // latitude: hashLat,
+                // visitCount: 1,
                 ...visitData,
               },
             });
