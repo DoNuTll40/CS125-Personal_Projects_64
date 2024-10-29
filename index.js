@@ -3,7 +3,8 @@ require('dotenv').config()
 const express = require("express");
 const web = express();
 const port = process.env.PORT;
-
+const http = require('http');
+const { wss } = require('./src/middlewares/websocket')
 const cors = require('cors')
 const compression = require('compression');
 
@@ -51,7 +52,15 @@ web.use("/banner", async (req, res, next) => {
     }
 })
 
-web.listen(port, () => {
+const server = http.createServer(web);
+
+server.on('upgrade', (request, socket, head) => {
+    wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit('connection', ws, request);
+    });
+});
+
+server.listen(port, () => {
     console.log(`\nServer run on port ${port} | URL : http://localhost:${port} \n`);
 })
 
