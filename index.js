@@ -20,7 +20,7 @@ const notFoundError = require("./src/middlewares/not-found");
 const prisma = require('./src/configs/prisma');
 const gpsRoute = require('./src/routes/gps-route');
 
-web.use(cors())
+web.use(cors({ origin: '*' }))
 web.use(express.json());
 web.use(compression());
 web.get("/", (req, res) => {
