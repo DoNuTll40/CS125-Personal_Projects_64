@@ -25,6 +25,7 @@ wss.on('connection', (ws) => {
 });
 
 function notifyClients(message) {
+
     const notification = {
         message,
         timestamp: Date.now() // Add timestamp to notification

@@ -41,6 +41,7 @@ exports.saveVisitData = async (req, res, next) => {
         },
       });
     }
+    res.json({ message: "success!", code: 200 })
   } catch (err) {
     next(err);
     console.log(err);
