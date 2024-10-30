@@ -1,6 +1,7 @@
 const prisma = require("../configs/prisma");
 const CryptoJS = require("crypto-js");
 const { notifyClients } = require("../middlewares/websocket");
+const { subMonths } = require("date-fns");
 require("dotenv").config();
 
 exports.saveVisitData = async (req, res, next) => {
@@ -50,6 +51,17 @@ exports.saveVisitData = async (req, res, next) => {
 
 exports.viewVisit = async (req, res, next) => {
   try {
+
+    const oneMonthAgo = subMonths(new Date(), 1);
+
+    await prisma.visit.deleteMany({
+      where: {
+        updatedAt: {
+          lt: oneMonthAgo, 
+        },
+      }
+    })
+
     const rs = await prisma.visit.findMany({
       orderBy: {
         updatedAt: "desc",
