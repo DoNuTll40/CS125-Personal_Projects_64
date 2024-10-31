@@ -37,6 +37,4 @@ function notifyClients(message) {
     });
 }
 
-console.log(notifications)
-
 module.exports = { wss, notifyClients };
