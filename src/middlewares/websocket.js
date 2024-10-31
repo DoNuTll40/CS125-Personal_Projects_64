@@ -2,7 +2,6 @@
 const WebSocket = require('ws');
 
 const wss = new WebSocket.Server({ noServer: true });
-const notifications = []; // Array to store notifications with timestamps
 
 let clients = 0;
 
@@ -28,15 +27,8 @@ function notifyClients(message) {
 
     const notification = {
         message,
-        timestamp: Date.now() // Add timestamp to notification
+        timestamp: Date.now()
     };
-    notifications.push(notification);
-    
-    // Remove notifications older than 24 hours (86400000 milliseconds)
-    const now = Date.now();
-    while (notifications.length > 0 && (now - notifications[0].timestamp) >= 86400000) {
-        notifications.shift();
-    }
     
     wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
