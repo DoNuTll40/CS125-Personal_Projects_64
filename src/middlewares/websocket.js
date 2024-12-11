@@ -11,11 +11,11 @@ wss.on('connection', (ws) => {
     console.log('client connected. Total clients:', clients);
 
     // Send all recent notifications to the new client
-    const now = Date.now();
-    const recentNotifications = notifications.filter(notification => (now - notification.timestamp) < 86400000); // Last 24 hours
-    recentNotifications.forEach(notification => {
-        ws.send(JSON.stringify(notification));
-    });
+    // const now = Date.now();
+    // const recentNotifications = notifications.filter(notification => (now - notification.timestamp) < 86400000); // Last 24 hours
+    // recentNotifications.forEach(notification => {
+    //     ws.send(JSON.stringify(notification));
+    // });
 
     ws.on('close', () => {
         clients--;
