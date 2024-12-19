@@ -4,7 +4,7 @@
 
 - PORT = 8000
 
-- DATABASE_URL = "mysql://root:Donut1140<>@localhost:3306/schedule"
+- DATABASE_URL = "mysql://root:<MyPassword>@localhost:3306/schedule"
 
 - JWT_SECRET = qwerty
 
